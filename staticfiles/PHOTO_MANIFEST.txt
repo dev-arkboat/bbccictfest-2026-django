@@ -1,0 +1,46 @@
+﻿Drop photos here. Filenames below are referenced by index.html.
+Recommended: square JPG/WebP, ~200x200px, optimized (<30KB each).
+
+MEMBERS (images/members/)
+  Tofazzol Hossen Sir  ->  images/members/tofazzol-hossen.jpg
+  Kaiser Sir  ->  images/members/kaiser.jpg
+  A. N. M. Bazlur Rahman Sir  ->  images/members/a-n-m-bazlur-rahman.jpg
+  Rustom Sir  ->  images/members/rustom.jpg
+  Shahin Al Mamun Sir  ->  images/members/shahin-al-mamun.jpg
+  Aminul Haque Sir  ->  images/members/aminul-haque.jpg
+  Farid Sir  ->  images/members/farid.jpg
+  Shuvo Sir  ->  images/members/shuvo.jpg
+  Jakaria Sir  ->  images/members/jakaria.jpg  (fallback: jakaria-ibn-habib.jpg also works)
+  Samir Talukder  ->  images/members/samir-talukder.jpg  (also Segment Head — Coding)
+  Abu Salehin  ->  images/members/abu-salehin.jpg  (also Segment Head — Innovation Idea)
+  Azizul Islam  ->  images/members/azizul-islam.jpg  (also Segment Head — ICT Quiz)
+  Shawcho  ->  images/members/shawcho.jpg
+  Sazidur Rahman  ->  images/members/sazidur-rahman.jpg
+  Nuren Zarif Haque  ->  images/members/nuren-zarif-haque.jpg
+  Shuddo Pandit  ->  images/members/shuddo-pandit.jpg
+  Shafiq Muammer  ->  images/members/shafiq-muammer.jpg
+  Hasan Tasauf Khan  ->  images/members/hasan-tasauf-khan.jpg
+  Shahol Islam Soad  ->  images/members/shahol-islam-soad.jpg
+  Jubayer Ahmed  ->  images/members/jubayer-ahmed.jpg
+  Shariful Islam Sumon  ->  images/members/shariful-islam-sumon.jpg
+  Abir  ->  images/members/abir.jpg
+  Azizul Islam  ->  images/members/azizul-islam-2.jpg
+  Alve Shafi  ->  images/members/alve-shafi.jpg
+  Al Amin  ->  images/members/al-amin.jpg
+  Xman  ->  images/members/xman.jpg  (Segment Head — Rubik's Cube)
+  Sun  ->  images/members/sun.jpg  (Segment Head — Chess)
+  Shah Neyamot Ullah  ->  images/members/shah-neyamot-ullah.jpg
+  Saad Mohammad OBAIDULLAH  ->  images/members/saad-mohammad-obaidullah.jpg
+  Raiyan Sarwaor  ->  images/members/raiyan-sarwaor.jpg
+  Shayon  ->  images/members/shayon.jpg
+  Asaduzzman Joy  ->  images/members/asaduzzman-joy.jpg
+
+  Removed (no longer in Adviser Panel):
+    Delwar Hossain Sir (images/members/delwar-hossain.jpg) — removed
+    Kaderuzaman Rana Sir (images/members/kaderuzaman-rana.jpg) — removed
+    Razzak Sir (images/members/razzak.jpg) — removed
+
+GUESTS (images/guests/)
+  To Be Announced  ->  images/guests/guest-1.jpg
+  To Be Announced  ->  images/guests/guest-2.jpg
+  To Be Announced  ->  images/guests/guest-3.jpg
