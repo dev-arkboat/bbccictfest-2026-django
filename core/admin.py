@@ -28,7 +28,7 @@ class SiteSettingAdmin(admin.ModelAdmin):
         ("Event", {"fields": ("event_date", "venue_name", "venue_address", "participants_label")}),
         ("About", {"fields": ("about_heading_a", "about_heading_b", "about_para1", "about_para2")}),
         ("CTA", {"fields": ("cta_tag", "cta_title_a", "cta_title_b", "cta_subtitle")}),
-        ("Campus Ambassador", {"fields": ("ca_heading", "ca_description", "ca_open")}),
+        ("Campus Ambassador", {"fields": ("ca_heading", "ca_description")}),
         ("Contact & Footer", {"fields": ("contact_email", "facebook_url", "footer_about", "made_by_name", "made_by_url")}),
         ("SEO / Social", {"fields": ("meta_description", "og_image_url")}),
         ("Switches", {"fields": ("register_status",)}),
@@ -160,7 +160,9 @@ class PersonReviewAdmin(admin.ModelAdmin):
         "user__username",
         "comment",
         "volunteer__name",
-        "ambassador__full_name",
+        "ambassador_user__username",
+        "ambassador_user__first_name",
+        "ambassador_user__last_name",
     )
     actions = ["approve_reviews", "unapprove_reviews"]
 

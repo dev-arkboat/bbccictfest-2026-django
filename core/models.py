@@ -53,7 +53,6 @@ class SiteSetting(models.Model):
         default="https://bbccictfest.pro.bd/logo.png",
     )
     register_status = models.BooleanField("Registration open", default=True)
-    ca_open = models.BooleanField("Campus Ambassador applications open", default=True)
     about_heading_a = models.CharField(
         max_length=200, default="The Biggest ICT Event"
     )
@@ -352,9 +351,13 @@ class Review(models.Model):
 class PersonReview(models.Model):
     """A 5-star rating + comment for one volunteer or one ambassador.
 
+    Ambassadors are plain users with the Campus Ambassador role, so both
+    targets are users here: volunteers are rated via the linked Volunteer
+    row, ambassadors directly via their user account.
+
     Same rules as the event review: visible to everyone, one per logged-in
     user per person, editable afterwards. Exactly one of `volunteer` /
-    `ambassador` must be set.
+    `ambassador_user` must be set.
     """
 
     user = models.ForeignKey(
@@ -366,11 +369,12 @@ class PersonReview(models.Model):
         null=True, blank=True,
         related_name="person_reviews",
     )
-    ambassador = models.ForeignKey(
-        "registrations.CampusAmbassadorApplication",
+    ambassador_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         null=True, blank=True,
-        related_name="person_reviews",
+        related_name="received_reviews",
+        help_text="The Campus Ambassador (user) being rated.",
     )
     rating = models.PositiveSmallIntegerField(
         choices=[(i, f"{i} star{'s' if i > 1 else ''}") for i in range(1, 6)],
@@ -388,24 +392,28 @@ class PersonReview(models.Model):
                 fields=["user", "volunteer"], name="unique_user_volunteer_review"
             ),
             models.UniqueConstraint(
-                fields=["user", "ambassador"], name="unique_user_ambassador_review"
+                fields=["user", "ambassador_user"], name="unique_user_ambassador_review"
             ),
             models.CheckConstraint(
                 condition=(
-                    models.Q(volunteer__isnull=True, ambassador__isnull=False)
-                    | models.Q(volunteer__isnull=False, ambassador__isnull=True)
+                    models.Q(volunteer__isnull=True, ambassador_user__isnull=False)
+                    | models.Q(volunteer__isnull=False, ambassador_user__isnull=True)
                 ),
                 name="person_review_single_target",
             ),
         ]
 
     def __str__(self):
-        target = self.volunteer or self.ambassador
-        return f"{self.user.get_username()} on {target} — {self.rating}/5"
+        target = self.target
+        if hasattr(target, "get_full_name"):
+            name = target.get_full_name() or target.get_username()
+        else:
+            name = str(target)
+        return f"{self.user.get_username()} on {name} — {self.rating}/5"
 
     @property
     def target(self):
-        return self.volunteer or self.ambassador
+        return self.volunteer or self.ambassador_user
 
     def clean(self):
         # NOTE: the exactly-one-target rule lives in the DB CheckConstraint,

@@ -4,14 +4,17 @@ import re
 import uuid
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count, Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from accounts.decorators import organizer_required, volunteer_required
-from accounts.models import role_rank
+from accounts.forms import CampusAmbassadorCreateForm
+from accounts.models import Profile, Role, role_rank
 from core.forms import PersonReviewForm
 from core.models import PersonReview, SiteSetting
 from core.qr import qr_png_bytes
@@ -19,8 +22,10 @@ from schools.models import School
 
 from . import bkash
 from .bkash import BkashConfigError, BkashError
-from .forms import CampusAmbassadorForm, MultiEventRegistrationForm, RegistrationForm
-from .models import CampusAmbassadorApplication, Event, PaymentTransaction, Registration
+from .forms import MultiEventRegistrationForm, RegistrationForm
+from .models import Event, PaymentTransaction, Registration
+
+User = get_user_model()
 
 logger = logging.getLogger("registrations.bkash")
 
@@ -42,7 +47,7 @@ def _remember_guest_registration(request, reg):
 
 def _can_view_registration(request, reg):
     """Owner, organizer, or same-browser guest session may view/pay a row."""
-    if request.user.is_authenticated and role_rank(request.user) >= 2:
+    if request.user.is_authenticated and role_rank(request.user) >= 3:
         return True
     if request.user.is_authenticated and reg.user_id == request.user.pk:
         return True
@@ -53,7 +58,7 @@ def _registration_home(request, reg):
     """Where to send someone after a payment step: private detail page for
     logged-in owners/organizers, public receipt page for guests."""
     if request.user.is_authenticated and (
-        reg.user_id == request.user.pk or role_rank(request.user) >= 2
+        reg.user_id == request.user.pk or role_rank(request.user) >= 3
     ):
         return redirect("registrations:detail", pk=reg.pk)
     return redirect("registrations:receipt", pk=reg.pk)
@@ -450,7 +455,7 @@ def registration_detail(request, pk):
     reg = get_object_or_404(Registration, pk=pk)
     if reg.user != request.user:
         # Layered admin: organizers+ can view any registration.
-        if role_rank(request.user) < 2:
+        if role_rank(request.user) < 3:
             messages.error(request, "You do not have permission to view that.")
             return redirect("registrations:my")
     return render(request, "registrations/detail.html", {"registration": reg})
@@ -642,63 +647,40 @@ def check_in_toggle(request, pk):
     return redirect("registrations:verify")
 
 
-@login_required
-def ca_apply(request):
-    site = SiteSetting.get_solo()
-    if not site.ca_open:
-        messages.error(request, "Campus Ambassador applications are currently closed.")
-        return redirect("core:home")
-    existing = CampusAmbassadorApplication.objects.filter(user=request.user).first()
-    if existing is not None:
-        messages.info(request, f"You already applied (status: {existing.get_status_display()}).")
-        return render(request, "registrations/ca_status.html", {"application": existing})
-    if request.method == "POST":
-        form = CampusAmbassadorForm(request.POST)
-        if form.is_valid():
-            app = form.save(commit=False)
-            app.user = request.user
-            app.save()
-            messages.success(request, "Application submitted! We will review it soon.")
-            return render(request, "registrations/ca_status.html", {"application": app})
-    else:
-        user = request.user
-        form = CampusAmbassadorForm(
-            initial={
-                "full_name": user.get_full_name() or user.username,
-                "email": user.email,
-                "phone": getattr(getattr(user, "profile", None), "phone", ""),
-                "class_name": getattr(getattr(user, "profile", None), "class_name", ""),
-            }
-        )
-    return render(request, "registrations/ca_form.html", {"form": form})
+def _ca_display_name(user):
+    """Full name or username — ambassadors are plain users, no separate row."""
+    return user.get_full_name() or user.username
+
+
+def _ca_school(user):
+    profile = getattr(user, "profile", None)
+    return getattr(profile, "school", None)
 
 
 def ambassador_list(request):
-    """Public Campus Ambassador section — approved ambassadors only.
+    """Public Campus Ambassador section — users with the Campus Ambassador role.
 
-    Grouped by school (unschooled applications last) with per-card ratings.
+    Grouped by school (CAs without a school last) with per-card ratings.
     """
     ambassadors = (
-        CampusAmbassadorApplication.objects.filter(
-            status=CampusAmbassadorApplication.STATUS_APPROVED
-        )
-        .select_related("school", "user")
+        User.objects.filter(profile__role=Role.CAMPUS_AMBASSADOR)
+        .select_related("profile__school")
         .annotate(
             avg_rating=Avg(
-                "person_reviews__rating",
-                filter=Q(person_reviews__is_approved=True),
+                "received_reviews__rating",
+                filter=Q(received_reviews__is_approved=True),
             ),
             rating_count=Count(
-                "person_reviews",
-                filter=Q(person_reviews__is_approved=True),
+                "received_reviews",
+                filter=Q(received_reviews__is_approved=True),
             ),
         )
-        .order_by("school__order", "school__name", "full_name")
+        .order_by("profile__school__order", "profile__school__name", "username")
     )
     groups = []
-    for _school_id, members in itertools.groupby(ambassadors, key=lambda a: a.school_id):
+    for _school_id, members in itertools.groupby(ambassadors, key=lambda a: _ca_school(a)):
         members = list(members)
-        groups.append((members[0].school, members))
+        groups.append((_ca_school(members[0]), members))
     groups.sort(key=lambda group: group[0] is None)
     school_count = sum(1 for school, _members in groups if school is not None)
     return render(
@@ -715,13 +697,9 @@ def ambassador_list(request):
 
 def ambassador_detail(request, pk):
     """Public profile page for one ambassador — no login needed."""
-    ambassador = get_object_or_404(
-        CampusAmbassadorApplication,
-        pk=pk,
-        status=CampusAmbassadorApplication.STATUS_APPROVED,
-    )
+    ambassador = _approved_ambassador_or_404(pk)
     reviews = (
-        PersonReview.objects.filter(ambassador=ambassador, is_approved=True)
+        PersonReview.objects.filter(ambassador_user=ambassador, is_approved=True)
         .select_related("user", "user__profile")
         .order_by("-updated_at")
     )
@@ -729,13 +707,15 @@ def ambassador_detail(request, pk):
     my_review = None
     if request.user.is_authenticated:
         my_review = PersonReview.objects.filter(
-            user=request.user, ambassador=ambassador
+            user=request.user, ambassador_user=ambassador
         ).first()
     return render(
         request,
         "registrations/ca_detail.html",
         {
             "ambassador": ambassador,
+            "ambassador_name": _ca_display_name(ambassador),
+            "school": _ca_school(ambassador),
             "reviews": reviews,
             "rating_avg": round(stats["avg"] or 0, 1),
             "rating_count": stats["count"] or 0,
@@ -749,60 +729,61 @@ def ambassador_detail(request, pk):
 @require_POST
 def ambassador_review_upsert(request, pk):
     """Create or edit the logged-in user's rating for one ambassador."""
-    ambassador = get_object_or_404(
-        CampusAmbassadorApplication,
-        pk=pk,
-        status=CampusAmbassadorApplication.STATUS_APPROVED,
-    )
-    review = PersonReview.objects.filter(user=request.user, ambassador=ambassador).first()
+    ambassador = _approved_ambassador_or_404(pk)
+    review = PersonReview.objects.filter(
+        user=request.user, ambassador_user=ambassador
+    ).first()
     form = PersonReviewForm(request.POST, instance=review)
     if form.is_valid():
         obj = form.save(commit=False)
         obj.user = request.user
-        obj.ambassador = ambassador
+        obj.ambassador_user = ambassador
         obj.volunteer = None
         obj.is_approved = True
         obj.save()
         messages.success(request, "Thanks! Your rating has been saved.")
     else:
         messages.error(request, "Could not save your rating — check the form.")
-    return redirect(ambassador.get_absolute_url())
+    return redirect("registrations:ca_detail", pk=ambassador.pk)
 
 
 @login_required
 @require_POST
 def ambassador_review_delete(request, pk):
-    ambassador = get_object_or_404(
-        CampusAmbassadorApplication,
-        pk=pk,
-        status=CampusAmbassadorApplication.STATUS_APPROVED,
-    )
-    review = PersonReview.objects.filter(user=request.user, ambassador=ambassador).first()
+    ambassador = _approved_ambassador_or_404(pk)
+    review = PersonReview.objects.filter(
+        user=request.user, ambassador_user=ambassador
+    ).first()
     if review is not None:
         review.delete()
         messages.success(request, "Your rating was deleted.")
-    return redirect(ambassador.get_absolute_url())
+    return redirect("registrations:ca_detail", pk=ambassador.pk)
 
 
 def _approved_ambassador_or_404(pk):
-    return get_object_or_404(
-        CampusAmbassadorApplication,
-        pk=pk,
-        status=CampusAmbassadorApplication.STATUS_APPROVED,
-    )
+    """A user holding the Campus Ambassador role — the only kind that is public."""
+    return get_object_or_404(User, pk=pk, profile__role=Role.CAMPUS_AMBASSADOR)
 
 
 def ambassador_qr(request, pk):
     """QR code PNG pointing at this ambassador's public page (public)."""
     ambassador = _approved_ambassador_or_404(pk)
-    png = qr_png_bytes(request.build_absolute_uri(ambassador.get_absolute_url()))
+    png = qr_png_bytes(
+        request.build_absolute_uri(
+            reverse("registrations:ca_detail", kwargs={"pk": ambassador.pk})
+        )
+    )
     return HttpResponse(png, content_type="image/png")
 
 
 def ambassador_qr_download(request, pk):
     """Same QR as a download — works logged in or not."""
     ambassador = _approved_ambassador_or_404(pk)
-    png = qr_png_bytes(request.build_absolute_uri(ambassador.get_absolute_url()))
+    png = qr_png_bytes(
+        request.build_absolute_uri(
+            reverse("registrations:ca_detail", kwargs={"pk": ambassador.pk})
+        )
+    )
     response = HttpResponse(png, content_type="image/png")
     response["Content-Disposition"] = (
         f'attachment; filename="ambassador-{ambassador.pk}-qr.png"'
@@ -810,27 +791,61 @@ def ambassador_qr_download(request, pk):
     return response
 
 
+@organizer_required
+def ca_create(request):
+    """Organizer-only page to create a Campus Ambassador account.
+
+    Creates the user (with a properly hashed password) plus profile in one
+    go: role set to Campus Ambassador, school assigned, institution mirrored
+    from the school. No public application flow exists by design.
+    """
+    if request.method == "POST":
+        form = CampusAmbassadorCreateForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            user = User(
+                username=data["username"],
+                email=data.get("email", ""),
+                first_name=data.get("first_name", ""),
+                last_name=data.get("last_name", ""),
+            )
+            user.set_password(data["password1"])
+            user.save()
+            profile, _ = Profile.objects.get_or_create(user=user)
+            profile.role = Role.CAMPUS_AMBASSADOR
+            profile.school = data["school"]
+            profile.institution = data["school"].name
+            profile.phone = data.get("phone", "")
+            profile.bio = data.get("bio", "")
+            profile.save()
+            messages.success(
+                request,
+                f"Campus Ambassador “{user.username}” created for "
+                f"{data['school'].name} — they can now log in.",
+            )
+            return redirect("registrations:ca_detail", pk=user.pk)
+    else:
+        form = CampusAmbassadorCreateForm()
+    return render(request, "registrations/ca_create.html", {"form": form})
+
+
 @login_required
 def ca_dashboard(request):
-    """A Campus Ambassador's view of their own school and its volunteers."""
-    application = (
-        CampusAmbassadorApplication.objects.filter(
-            user=request.user,
-            status=CampusAmbassadorApplication.STATUS_APPROVED,
-        )
-        .select_related("school")
-        .first()
-    )
-    if application is None:
-        messages.error(request, "Only approved Campus Ambassadors can access the dashboard.")
-        return redirect("registrations:ca_apply")
-    if application.school_id is None:
+    """A Campus Ambassador's view of their own school: its volunteers and
+    its participants. Admins create ambassadors directly (role + school on
+    the profile) — there is no application flow."""
+    profile = getattr(request.user, "profile", None)
+    if profile is None or profile.role != Role.CAMPUS_AMBASSADOR:
+        messages.error(request, "Only Campus Ambassadors can access the dashboard.")
+        return redirect("accounts:profile")
+    school = profile.school
+    if school is None:
         messages.error(
-            request, "Your application has no school assigned yet. Please contact the organizers."
+            request, "Your profile has no school assigned yet. Please contact the organizers."
         )
         return redirect("accounts:profile")
     volunteers = (
-        application.school.volunteers.filter(is_active=True)
+        school.volunteers.filter(is_active=True)
         .select_related("school")
         .order_by("order", "name")
     )
@@ -846,7 +861,7 @@ def ca_dashboard(request):
             lookups |= Q(phone__contains=digits)
         volunteers = volunteers.filter(lookups)
     participants = (
-        Registration.objects.filter(school=application.school)
+        Registration.objects.filter(school=school)
         .select_related("event")
         .order_by("-created_at")
     )
@@ -871,8 +886,9 @@ def ca_dashboard(request):
         request,
         "registrations/ca_dashboard.html",
         {
-            "application": application,
-            "school": application.school,
+            "ambassador": request.user,
+            "ambassador_name": _ca_display_name(request.user),
+            "school": school,
             "volunteers": volunteers,
             "participants": participants,
             "q": q,

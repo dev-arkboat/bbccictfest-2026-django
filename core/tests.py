@@ -192,19 +192,11 @@ class FestFlowTests(TestCase):
         self.assertEqual(post.likes_count(), 0)
 
     # -- CA + profiles -------------------------------------------------
-    def test_ca_apply_once(self):
+    # Ambassadors are plain users with the Campus Ambassador role, created
+    # by organizers in admin — there is no application flow (/register/ca/apply/ 404s).
+    def test_ca_apply_url_gone(self):
         self.client.login(username="tester", password="pass12345")
-        data = {
-            "full_name": "Test User", "email": "t@example.com", "phone": "01712345678",
-            "school": self.school.pk,
-            "institution": "Test School", "class_name": "10", "district": "Tangail",
-            "motivation": "I love tech fests!",
-        }
-        self.assertEqual(self.client.post("/register/ca/apply/", data).status_code, 200)
-        from registrations.models import CampusAmbassadorApplication
-
-        app = CampusAmbassadorApplication.objects.get(user=self.user)
-        self.assertEqual(app.school, self.school)
+        self.assertEqual(self.client.get("/register/ca/apply/").status_code, 404)
 
     def test_profile_pages(self):
         self.client.login(username="tester", password="pass12345")
@@ -221,14 +213,14 @@ class FestFlowTests(TestCase):
     def test_roles_layering(self):
         from accounts.models import role_rank
 
-        self.assertEqual(role_rank(self.admin), 3)
+        self.assertEqual(role_rank(self.admin), 4)
         self.assertEqual(role_rank(self.user), 0)
         # organizer-only board blocked for participants, ok for staff-made organizer
         self.assertEqual(self.client.get("/register/board/").status_code, 302)
         self.user.profile.role = "organizer"
         self.user.profile.save()
         self.user.refresh_from_db()
-        self.assertEqual(role_rank(self.user), 2)
+        self.assertEqual(role_rank(self.user), 3)
 
 
 class SchoolVolunteerAmbassadorTests(TestCase):
@@ -256,14 +248,17 @@ class SchoolVolunteerAmbassadorTests(TestCase):
         )
 
     def _approve_ca(self, user, school):
-        from registrations.models import CampusAmbassadorApplication
+        """Make a user a Campus Ambassador the admin way: role + school."""
+        from accounts.models import Role
 
-        return CampusAmbassadorApplication.objects.create(
-            user=user, school=school, full_name="CA Person", email="ca@example.com",
-            phone="01700000000", institution=school.name, class_name="10",
-            motivation="Lead my campus!",
-            status=CampusAmbassadorApplication.STATUS_APPROVED,
-        )
+        user.first_name = "CA"
+        user.last_name = "Person"
+        user.save()
+        profile = user.profile
+        profile.role = Role.CAMPUS_AMBASSADOR
+        profile.school = school
+        profile.save()
+        return user
 
     # -- volunteer detail + QR (public, no login) ------------------------
     def test_volunteer_detail_public(self):
@@ -343,19 +338,17 @@ class SchoolVolunteerAmbassadorTests(TestCase):
         self.assertContains(r, "CA Person")
         self.assertContains(r, self.school.name)
 
-    def test_ca_application_requires_school(self):
-        from registrations.models import CampusAmbassadorApplication
+    def test_ca_without_school_cannot_use_dashboard(self):
+        from accounts.models import Role
 
-        self.client.login(username="tester", password="pass12345")
-        r = self.client.post("/register/ca/apply/", {
-            "full_name": "Test User", "email": "t@example.com", "phone": "01712345678",
-            "institution": "Test School", "class_name": "10", "district": "Tangail",
-            "motivation": "I love tech fests!",
-        })
-        self.assertEqual(r.status_code, 200)  # form re-rendered, not saved
-        self.assertFalse(
-            CampusAmbassadorApplication.objects.filter(user=self.user).exists()
-        )
+        profile = self.ca_user.profile
+        profile.role = Role.CAMPUS_AMBASSADOR
+        profile.school = None
+        profile.save()
+        self.client.login(username="campusca", password="pass12345")
+        r = self.client.get("/register/ca/dashboard/")
+        self.assertEqual(r.status_code, 302)
+        self.assertIn("/accounts/me/", r.url)
 
     # -- CA dashboard ------------------------------------------------------
     def test_ca_dashboard_requires_login(self):
@@ -367,6 +360,15 @@ class SchoolVolunteerAmbassadorTests(TestCase):
         self.client.login(username="tester", password="pass12345")
         r = self.client.get("/register/ca/dashboard/")
         self.assertEqual(r.status_code, 302)
+
+    def test_ca_rank_between_volunteer_and_organizer(self):
+        from accounts.models import role_rank
+
+        self._approve_ca(self.ca_user, self.school)
+        self.assertEqual(role_rank(self.ca_user), 2)
+        # CAs get their school dashboard but not organizer pages.
+        self.client.login(username="campusca", password="pass12345")
+        self.assertEqual(self.client.get("/register/board/").status_code, 302)
 
     def test_ca_dashboard_shows_own_school_volunteers(self):
         self._approve_ca(self.ca_user, self.school)

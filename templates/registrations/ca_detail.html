@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}{{ ambassador.full_name }} — Campus Ambassador | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+{% block title %}{{ ambassador_name }} — Campus Ambassador | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
 
 {% block content %}
 <section class="page-hero">
   <div class="container">
     <span class="section-tag">Campus Ambassador</span>
-    <div class="member-photo" style="width:110px;height:110px;font-size:32px;margin:0 auto 18px;">{{ ambassador.full_name|cut:" "|slice:":2"|upper }}</div>
-    <h1 class="section-title">{{ ambassador.full_name }}</h1>
-    <p class="section-desc">{% if ambassador.school %}{{ ambassador.school.name }}{% else %}{{ ambassador.institution }}{% endif %}{% if ambassador.school and ambassador.institution and ambassador.institution != ambassador.school.name %} · {{ ambassador.institution }}{% endif %}</p>
+    <div class="member-photo" style="width:110px;height:110px;font-size:32px;margin:0 auto 18px;">{% if ambassador.profile.avatar_url %}<img class="avatar-img" loading="lazy" decoding="async" width="110" height="110" src="{{ ambassador.profile.avatar_url }}" alt="{{ ambassador_name }}" onerror="this.remove()">{% else %}{{ ambassador_name|cut:" "|slice:":2"|upper }}{% endif %}</div>
+    <h1 class="section-title">{{ ambassador_name }}</h1>
+    <p class="section-desc">@{{ ambassador.username }}{% if school %} · {{ school.name }}{% endif %}{% if ambassador.profile.institution and school and ambassador.profile.institution != school.name %} · {{ ambassador.profile.institution }}{% endif %}</p>
     <p class="section-desc">{% if rating_count %}<span class="stars">★★★★★</span> {{ rating_avg }}/5 from {{ rating_count }} rating{{ rating_count|pluralize }}{% else %}No ratings yet — be the first!{% endif %}</p>
   </div>
 </section>
@@ -19,7 +19,7 @@
       <div class="comp-card" style="text-align:center;">
         <h3>Scan to open this page</h3>
         <p class="comp-desc">Point any camera at this QR code to return here.</p>
-        <img src="{% url 'registrations:ca_qr' ambassador.pk %}" alt="QR code for {{ ambassador.full_name }}" width="220" height="220" style="border-radius:12px;margin:14px auto;display:block;background:#fff;padding:8px;">
+        <img src="{% url 'registrations:ca_qr' ambassador.pk %}" alt="QR code for {{ ambassador_name }}" width="220" height="220" style="border-radius:12px;margin:14px auto;display:block;background:#fff;padding:8px;">
         <div class="cta-actions" style="margin-top:8px;">
           <a href="{% url 'registrations:ca_qr_download' ambassador.pk %}" class="btn btn-primary btn-sm" download>Download QR Code</a>
           <a href="{% url 'registrations:ca_list' %}" class="btn btn-outline btn-sm">All Ambassadors</a>
@@ -65,7 +65,7 @@
         </form>
         {% endif %}
         {% else %}
-        <p class="comp-desc">Want to rate {{ ambassador.full_name }}? <a href="{% url 'accounts:login' %}?next={{ ambassador.get_absolute_url }}" style="color:var(--ember);">Login</a> to leave a 5-star rating and a comment.</p>
+        <p class="comp-desc">Want to rate {{ ambassador_name }}? <a href="{% url 'accounts:login' %}?next={% url 'registrations:ca_detail' ambassador.pk %}" style="color:var(--ember);">Login</a> to leave a 5-star rating and a comment.</p>
         {% endif %}
       </div>
     </div>

@@ -28,17 +28,18 @@ admin panel — no code changes needed.
 - [Create an account](https://bbccictfest.pro.bd/accounts/signup/) and [register for events](https://bbccictfest.pro.bd/register/) —
   free events confirm instantly, paid ones check out securely with bKash
 - Track everything from [your dashboard](https://bbccictfest.pro.bd/accounts/me/): registrations, payments,
-  CA application, liked posts, and your review — plus a public profile page to share
+  liked posts, and your review — plus a public profile page to share
 - Leave a 5-star [review](https://bbccictfest.pro.bd/reviews/) of the fest (one per person — you can edit it anytime),
   and rate individual volunteers and ambassadors right on their pages
-- Apply to be a [Campus Ambassador](https://bbccictfest.pro.bd/register/ca/apply/) for your school
 
 **If you're organizing**
 - Run the whole fest from `/admin/`: events and fees, registrations, payments,
   schools, volunteers, ambassadors, blog posts, reviews, and every line of
   homepage text
 - Give organizers the `Organizer` group and volunteers the `Volunteer` group —
-  permissions follow a simple ladder: participant < volunteer < organizer < superuser
+  permissions follow a simple ladder: participant < volunteer < campus ambassador < organizer < superuser
+- Create Campus Ambassadors from the Registrations Board (**Create Campus Ambassador** button, organizers only) —
+  there is no public application form; each CA gets a login tied to exactly one school
 
 ---
 
@@ -78,7 +79,7 @@ Open http://127.0.0.1:8000/ — and http://127.0.0.1:8000/admin/ for the control
 | App | What it owns |
 | --- | --- |
 | `core` | Homepage CMS (hero, ticker, stats, competitions, timeline, guests, committee, sponsors, FAQ), reviews, arcade game catalog |
-| `registrations` | Events, registrations, bKash payment ledger, Campus Ambassador applications |
+| `registrations` | Events, registrations, bKash payment ledger, Campus Ambassadors |
 | `schools` | School directory — every CA belongs to one, volunteers group under theirs |
 | `volunteers` | Volunteer profiles, public pages, QR codes |
 | `blog` | Posts, comments, likes |
@@ -137,15 +138,15 @@ Background reading: the
 This is the people system that holds the fest together:
 
 1. **Add the school** in admin (Schools → Add). One row per school/college.
-2. A student **applies as Campus Ambassador** and *must* pick their school.
-3. An organizer **approves** the application in admin.
-4. **Assign volunteers** to the same school on their volunteer records.
-5. The approved CA logs in and opens their **school dashboard**
+2. An organizer **creates the ambassador** from the Registrations Board
+   (**Create Campus Ambassador**) — username, school and password, no application form.
+3. **Assign volunteers** to the same school on their volunteer records.
+4. The CA logs in and opens their **school dashboard**
    (`/register/ca/dashboard/`) — they see their school and everyone
    volunteering under it, with contact info for coordination.
 
-The public [ambassadors page](https://bbccictfest.pro.bd/register/ca/) only ever shows *approved*
-ambassadors, and the dashboard is fenced so a CA can only ever see their own
+The public [ambassadors page](https://bbccictfest.pro.bd/register/ca/) only ever shows users
+with the Campus Ambassador role, and the dashboard is fenced so a CA can only ever see their own
 school's team.
 
 ---

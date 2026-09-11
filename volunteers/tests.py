@@ -46,7 +46,7 @@ class VolunteerReviewTests(TestCase):
         )
         review = PersonReview.objects.get(user=self.user, volunteer=self.volunteer)
         self.assertEqual((review.rating, review.comment), (3, "Updated"))
-        self.assertIsNone(review.ambassador)
+        self.assertIsNone(review.ambassador_user)
 
     def test_same_user_can_review_different_volunteers(self):
         self.client.login(username="rater", password="pass12345")

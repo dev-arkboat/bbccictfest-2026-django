@@ -68,12 +68,10 @@
     {% include "registrations/_closed_notice.html" %}
     {% endif %}
 
-    {% if site.ca_open %}
     <div style="text-align:center;margin-top:40px;" data-reveal>
-      <p class="section-desc" style="margin-bottom:16px;">Want to represent your campus instead?</p>
-      <a href="{% url 'registrations:ca_apply' %}" class="btn btn-outline" data-magnetic>Apply as Campus Ambassador</a>
+      <p class="section-desc" style="margin-bottom:16px;">Looking for your school's representative?</p>
+      <a href="{% url 'registrations:ca_list' %}" class="btn btn-outline" data-magnetic>Meet Our Ambassadors</a>
     </div>
-    {% endif %}
   </div>
 </section>
 

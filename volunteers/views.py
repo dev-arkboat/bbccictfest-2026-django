@@ -64,7 +64,7 @@ def volunteer_review_upsert(request, pk):
         obj = form.save(commit=False)
         obj.user = request.user
         obj.volunteer = volunteer
-        obj.ambassador = None
+        obj.ambassador_user = None
         obj.is_approved = True
         obj.save()
         messages.success(request, "Thanks! Your rating has been saved.")

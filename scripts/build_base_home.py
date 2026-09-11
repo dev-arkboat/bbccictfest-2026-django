@@ -55,7 +55,7 @@ def strip_google_links(snippet: str) -> str:
 
     def repl(m):
         attrs, href, tail = m.group(1), m.group(2), m.group(3)
-        new_href = "{% url 'registrations:ca_apply' %}" if "SchcKKNp8" in href else "{% url 'registrations:events' %}"
+        new_href = "{% url 'registrations:ca_list' %}" if "SchcKKNp8" in href else "{% url 'registrations:events' %}"
         merged = (attrs + " " + tail).replace('target="_blank"', "").replace("rel=\"noopener\"", "")
         merged = re.sub(r"\s+", " ", merged).strip()
         return f"<a href=\"{new_href}\" {merged}>" if merged else f"<a href=\"{new_href}\">"
@@ -497,10 +497,6 @@ new_actions = ("""<div class="cta-actions" data-reveal>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
           {% endfor %}
-          <a href="{% url 'registrations:ca_apply' %}" class="btn btn-outline" data-magnetic style="border-color: var(--ember-line); color: var(--ember);">
-            Become Campus Ambassador
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
         </div>""")
 cta = cta[:cta_actions.start()] + new_actions + cta[cta_actions.end():]
 home = home[:cta_m.start()] + cta + home[cta_m.end():]
@@ -613,7 +609,7 @@ footer = footer.replace('href="games/index.html">Games</a>',
                         '            <a href="{% url \'volunteers:list\' %}">Volunteers</a>\n'
                         '            <a href="{% url \'blog:list\' %}">Blog</a>\n'
                         '            <a href="{% url \'registrations:events\' %}">Register</a>\n'
-                        '            <a href="{% url \'registrations:ca_apply\' %}">Campus Ambassador</a>\n'
+                        '            <a href="{% url \'registrations:ca_list\' %}">Ambassadors</a>\n'
                         '          </div>')
 footer = footer.replace("club.bbcc@gmail.com", "{{ site.contact_email }}")
 footer = footer.replace("https://www.facebook.com/bbcompuerclub", "{{ site.facebook_url }}")

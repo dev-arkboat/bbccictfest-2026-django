@@ -7,6 +7,7 @@ User = get_user_model()
 class Role(models.TextChoices):
     PARTICIPANT = "participant", "Participant"
     VOLUNTEER = "volunteer", "Volunteer"
+    CAMPUS_AMBASSADOR = "campus_ambassador", "Campus Ambassador"
     ORGANIZER = "organizer", "Organizer"
 
 
@@ -14,20 +15,21 @@ class Role(models.TextChoices):
 ROLE_RANK = {
     Role.PARTICIPANT: 0,
     Role.VOLUNTEER: 1,
-    Role.ORGANIZER: 2,
+    Role.CAMPUS_AMBASSADOR: 2,
+    Role.ORGANIZER: 3,
 }
 
 
 def role_rank(user) -> int:
     """Return the admin-layer rank for a user.
 
-    0 participant < 1 volunteer < 2 organizer < 3 superuser.
+    0 participant < 1 volunteer < 2 campus ambassador < 3 organizer < 4 superuser.
     Staff flag alone does not grant rank; superuser always tops.
     """
     if user is None or not getattr(user, "is_authenticated", False):
         return -1
     if getattr(user, "is_superuser", False):
-        return 3
+        return 4
     profile = getattr(user, "profile", None)
     if profile is None:
         return 0
@@ -42,6 +44,13 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     role = models.CharField(max_length=20, choices=Role.choices, default=Role.PARTICIPANT)
+    school = models.ForeignKey(
+        "schools.School",
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="profiles",
+        help_text="School this user represents as Campus Ambassador.",
+    )
     phone = models.CharField(max_length=20, blank=True)
     institution = models.CharField(max_length=200, blank=True)
     class_name = models.CharField("Class", max_length=50, blank=True)
@@ -59,7 +68,7 @@ class Profile(models.Model):
     @property
     def rank(self) -> int:
         if self.user.is_superuser:
-            return 3
+            return 4
         return ROLE_RANK.get(self.role, 0)
 
     @property
@@ -67,5 +76,9 @@ class Profile(models.Model):
         return self.rank >= 1
 
     @property
+    def is_campus_ambassador(self) -> bool:
+        return self.role == Role.CAMPUS_AMBASSADOR
+
+    @property
     def is_organizer_or_above(self) -> bool:
-        return self.rank >= 2 or self.user.is_staff
+        return self.rank >= 3 or self.user.is_staff

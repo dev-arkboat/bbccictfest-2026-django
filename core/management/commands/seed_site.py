@@ -44,7 +44,7 @@ class Command(BaseCommand):
             TickerItem,
             TimelineStep,
         )
-        from registrations.models import CampusAmbassadorApplication, Event, Registration
+        from registrations.models import Event, Registration
 
         with transaction.atomic():
             SiteSetting.get_solo()
@@ -207,31 +207,19 @@ class Command(BaseCommand):
                 Event.objects.update_or_create(slug=ev["slug"], defaults={**ev, "is_active": True})
             self.stdout.write(f"events={len(events)}")
 
-            # Schools from every distinct institution already on file, then
-            # link CA applications to their school by institution name.
+            # Schools from every distinct institution already on file.
             from schools.models import School
 
-            institutions = set()
-            for model, field in ((Registration, "institution"),
-                                 (CampusAmbassadorApplication, "institution")):
-                institutions.update(
-                    name.strip()
-                    for name in model.objects.values_list(field, flat=True)
-                    if name and name.strip()
-                )
+            institutions = {
+                name.strip()
+                for name in Registration.objects.values_list("institution", flat=True)
+                if name and name.strip()
+            }
             for i, name in enumerate(sorted(institutions)):
                 School.objects.get_or_create(
                     name=name[:200], defaults={"order": i}
                 )
-            by_name = {s.name.lower(): s for s in School.objects.all()}
-            linked = 0
-            for app in CampusAmbassadorApplication.objects.filter(school__isnull=True):
-                school = by_name.get((app.institution or "").strip().lower())
-                if school is not None:
-                    app.school = school
-                    app.save(update_fields=["school"])
-                    linked += 1
-            self.stdout.write(f"schools={len(by_name)} ca-linked={linked}")
+            self.stdout.write(f"schools={School.objects.count()}")
 
             User = get_user_model()
             author = User.objects.filter(is_staff=True).first() or User.objects.first()

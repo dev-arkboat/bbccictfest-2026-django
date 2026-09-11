@@ -8,9 +8,6 @@
     <span class="section-tag">Campus Ambassador</span>
     <h1 class="section-title">Meet Our<br><span class="gradient-text">Ambassadors</span></h1>
     <p class="section-desc">Student leaders representing their schools at BBCC ICT Fest 2026.{% if ambassador_count %} {{ ambassador_count }} ambassador{{ ambassador_count|pluralize }}{% if school_count %} from {{ school_count }} school{{ school_count|pluralize }}{% endif %}.{% endif %}</p>
-    <div style="margin-top:24px;">
-      <a href="{% url 'registrations:ca_apply' %}" class="btn btn-primary" data-magnetic>Become an Ambassador</a>
-    </div>
   </div>
 </section>
 
@@ -22,12 +19,14 @@
     </div>
     <div class="committee-grid" style="margin-bottom:8px;">
       {% for ca in members %}
-      <a href="{{ ca.get_absolute_url }}" class="member-card" data-reveal style="text-decoration:none;color:inherit;display:block;">
-        <div class="member-photo">{{ ca.full_name|cut:" "|slice:":2"|upper }}</div>
-        <h4>{{ ca.full_name }}</h4>
-        <div class="member-role">{{ ca.class_name }}{% if ca.district %} · {{ ca.district }}{% endif %}</div>
+      {% with ca_name=ca.get_full_name|default:ca.username %}
+      <a href="{% url 'registrations:ca_detail' ca.pk %}" class="member-card" data-reveal style="text-decoration:none;color:inherit;display:block;">
+        <div class="member-photo">{{ ca_name|cut:" "|slice:":2"|upper }}</div>
+        <h4>{{ ca_name }}</h4>
+        <div class="member-role">@{{ ca.username }}</div>
         {% if ca.rating_count %}<div style="margin-top:10px;"><span class="stars">★ {{ ca.avg_rating|floatformat:1 }}/5 ({{ ca.rating_count }})</span></div>{% endif %}
       </a>
+      {% endwith %}
       {% endfor %}
     </div>
     {% empty %}

@@ -42,15 +42,12 @@
       </div>
       <div class="comp-card">
         <h3>Campus Ambassador</h3>
-        {% for app in ca_applications %}
-        <div class="comp-detail"><span>{{ app.full_name }} · <span class="status-pill status-{{ app.status }}">{{ app.get_status_display }}</span></span></div>
-        {% if app.status == "approved" and app.school %}
-        <div style="margin-top:12px;"><a href="{% url 'registrations:ca_dashboard' %}" class="btn btn-outline btn-sm">Open School Dashboard ({{ app.school.name }})</a></div>
+        {% if user.profile.role == "campus_ambassador" %}
+        <div class="comp-detail"><span>{% if user.profile.school %}{{ user.profile.school.name }}{% else %}No school assigned yet{% endif %} · <span class="status-pill status-confirmed">Campus Ambassador</span></span></div>
+        <div style="margin-top:12px;"><a href="{% url 'registrations:ca_dashboard' %}" class="btn btn-outline btn-sm">Open School Dashboard{% if user.profile.school %} ({{ user.profile.school.name }}){% endif %}</a></div>
+        {% else %}
+        <p class="comp-desc">Campus Ambassadors are appointed by the organizers.</p>
         {% endif %}
-        {% empty %}
-        <p class="comp-desc">Not applied yet.</p>
-        <div style="margin-top:12px;"><a href="{% url 'registrations:ca_apply' %}" class="btn btn-outline btn-sm">Apply Now</a></div>
-        {% endfor %}
       </div>
     </div>
 

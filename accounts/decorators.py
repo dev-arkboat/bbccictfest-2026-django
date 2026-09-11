@@ -9,8 +9,9 @@ from .models import Role, role_rank
 #: Minimum rank per layer name.
 LAYER_MIN_RANK = {
     "volunteer": 1,
-    "organizer": 2,
-    "superuser": 3,
+    "campus_ambassador": 2,
+    "organizer": 3,
+    "superuser": 4,
 }
 
 

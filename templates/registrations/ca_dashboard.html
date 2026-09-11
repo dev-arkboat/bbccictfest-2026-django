@@ -7,7 +7,7 @@
   <div class="container">
     <span class="section-tag">Campus Ambassador</span>
     <h1 class="section-title">{{ school.name }}</h1>
-    <p class="section-desc">Ambassador: {{ application.full_name }} · {{ volunteers|length }} volunteer{{ volunteers|length|pluralize }} · {{ participants|length }} participant{{ participants|length|pluralize }}</p>
+    <p class="section-desc">Ambassador: {{ ambassador.get_full_name|default:ambassador.username }} · {{ volunteers|length }} volunteer{{ volunteers|length|pluralize }} · {{ participants|length }} participant{{ participants|length|pluralize }}</p>
   </div>
 </section>
 

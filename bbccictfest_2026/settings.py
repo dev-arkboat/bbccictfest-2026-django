@@ -235,7 +235,6 @@ JAZZMIN_SETTINGS = {
         "registrations.Event": "fas fa-ticket-alt",
         "registrations.Registration": "fas fa-clipboard-list",
         "registrations.PaymentTransaction": "fas fa-money-bill-wave",
-        "registrations.CampusAmbassadorApplication": "fas fa-flag",
         "schools.School": "fas fa-school",
         "volunteers.Volunteer": "fas fa-hands-helping",
         "blog.Post": "fas fa-blog",

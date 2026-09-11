@@ -235,19 +235,16 @@
           </div>
           <div class="comp-card">
             <div class="comp-icon comp-icon-3">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <h3>How to Apply</h3>
-            <p class="comp-desc">Fill out the online form — takes under 2 minutes. Open to students of class 6–12 from any school/college in Tangail &amp; beyond.</p>
+            <h3>Appointed by Organizers</h3>
+            <p class="comp-desc">There is no application form — ambassadors are hand-picked by the fest organizing team from schools across Tangail &amp; beyond.</p>
           </div>
         </div>
         <div style="text-align:center; margin-top: 36px;" data-reveal>
-          <a href="{% url 'registrations:ca_apply' %}" id="caApplyBtn" class="btn btn-primary" data-magnetic>
-            Apply as Campus Ambassador
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
-          <a href="{% url 'registrations:ca_list' %}" class="btn btn-outline" data-magnetic style="margin-left:10px;">
+          <a href="{% url 'registrations:ca_list' %}" id="caApplyBtn" class="btn btn-primary" data-magnetic>
             Meet Our Ambassadors
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
           <p style="margin-top:12px; font-family:var(--font-mono); font-size:12px; color:var(--text-3);">Campus Ambassador</p>
         </div>
@@ -301,10 +298,6 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </a>
           {% endfor %}
-          <a href="{% url 'registrations:ca_apply' %}" class="btn btn-outline" data-magnetic style="border-color: var(--ember-line); color: var(--ember);">
-            Become Campus Ambassador
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
         </div>
     </section>
 

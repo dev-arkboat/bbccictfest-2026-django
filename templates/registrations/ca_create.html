@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Become a Campus Ambassador | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+{% block title %}Create Campus Ambassador | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
 
 {% block content %}
 <section class="page-hero">
   <div class="container">
-    <span class="section-tag">Campus Ambassador</span>
-    <h1 class="section-title">Represent Your<br><span class="gradient-text">Campus</span></h1>
-    <p class="section-desc">{{ site.ca_description }}</p>
+    <span class="section-tag">Organizers</span>
+    <h1 class="section-title">Create<br><span class="gradient-text">Ambassador</span></h1>
+    <p class="section-desc">Hand-picked accounts only — there is no public application form. The new ambassador can log in right away.</p>
   </div>
 </section>
 
@@ -22,10 +22,14 @@
           <div class="form-field">
             {{ field.label_tag }}
             {{ field }}
+            {% if field.help_text %}<p class="blog-meta">{{ field.help_text }}</p>{% endif %}
             {% if field.errors %}<ul class="form-errors">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
           </div>
           {% endfor %}
-          <div><button type="submit" class="btn btn-primary" data-magnetic>Submit Application</button></div>
+          <div>
+            <button type="submit" class="btn btn-primary" data-magnetic>Create Ambassador</button>
+            <a href="{% url 'registrations:board' %}" class="btn btn-outline">Back to Board</a>
+          </div>
         </form>
       </div>
     </div>

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils import timezone
 
-from .models import CampusAmbassadorApplication, Event, PaymentTransaction, Registration
+from .models import Event, PaymentTransaction, Registration
 
 
 @admin.register(Event)
@@ -76,22 +76,3 @@ class PaymentTransactionAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return False
-
-
-@admin.register(CampusAmbassadorApplication)
-class CampusAmbassadorApplicationAdmin(admin.ModelAdmin):
-    list_display = ("full_name", "school", "institution", "phone", "status", "created_at")
-    list_filter = ("status", "school")
-    list_editable = ("status",)
-    search_fields = ("full_name", "email", "phone", "institution", "school__name")
-    readonly_fields = ("user", "created_at", "updated_at")
-    autocomplete_fields = ("school",)
-    actions = ["approve", "reject"]
-
-    @admin.action(description="Approve selected applications")
-    def approve(self, request, queryset):
-        queryset.update(status=CampusAmbassadorApplication.STATUS_APPROVED)
-
-    @admin.action(description="Reject selected applications")
-    def reject(self, request, queryset):
-        queryset.update(status=CampusAmbassadorApplication.STATUS_REJECTED)

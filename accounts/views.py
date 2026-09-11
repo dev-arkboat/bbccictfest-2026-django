@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from blog.models import Comment, Like
 from core.models import Review
-from registrations.models import CampusAmbassadorApplication, Registration
+from registrations.models import Registration
 
 from .forms import ProfileForm, SignUpForm
 
@@ -38,7 +38,6 @@ def profile(request):
         review = user.review
     except Review.DoesNotExist:
         review = None
-    ca_applications = CampusAmbassadorApplication.objects.filter(user=user).select_related("school").order_by("-created_at")
     liked_posts = (
         Like.objects.filter(user=user).select_related("post").order_by("-created_at")[:10]
     )
@@ -51,7 +50,6 @@ def profile(request):
         {
             "registrations": registrations,
             "review": review,
-            "ca_applications": ca_applications,
             "liked_posts": liked_posts,
             "comments": comments,
         },

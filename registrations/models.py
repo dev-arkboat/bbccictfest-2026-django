@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.utils.text import slugify
 
 
 class Event(models.Model):
@@ -200,56 +199,3 @@ class PaymentTransaction(models.Model):
 
     def __str__(self):
         return f"{self.payment_id} [{self.status}]"
-
-
-class CampusAmbassadorApplication(models.Model):
-    """Custom CA form replacing the old Google Form."""
-
-    STATUS_PENDING = "pending"
-    STATUS_APPROVED = "approved"
-    STATUS_REJECTED = "rejected"
-    STATUS_CHOICES = [
-        (STATUS_PENDING, "Pending"),
-        (STATUS_APPROVED, "Approved"),
-        (STATUS_REJECTED, "Rejected"),
-    ]
-
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="ca_applications",
-    )
-    school = models.ForeignKey(
-        "schools.School",
-        on_delete=models.PROTECT,
-        null=True, blank=False,
-        related_name="ambassadors",
-        help_text="Required — every Campus Ambassador must belong to a school.",
-    )
-    full_name = models.CharField(max_length=160)
-    email = models.EmailField()
-    phone = models.CharField(max_length=20)
-    institution = models.CharField(max_length=200)
-    class_name = models.CharField("Class", max_length=50)
-    district = models.CharField(max_length=100, default="Tangail")
-    motivation = models.TextField(help_text="Why do you want to be a Campus Ambassador?")
-    img_url = models.ImageField(blank=True, null=True)
-    facebook_url = models.URLField(max_length=500, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
-    reviewer_note = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["user"], name="unique_ca_application_per_user"
-            )
-        ]
-
-    def __str__(self):
-        return f"CA: {self.full_name} ({self.get_status_display()})"
-
-    def get_absolute_url(self):
-        return reverse("registrations:ca_detail", kwargs={"pk": self.pk})

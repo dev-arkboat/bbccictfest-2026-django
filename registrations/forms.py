@@ -2,7 +2,7 @@ from django import forms
 
 from schools.models import School
 
-from .models import CampusAmbassadorApplication, Event, Registration
+from .models import Event, Registration
 
 
 class RegistrationForm(forms.ModelForm):
@@ -97,32 +97,3 @@ class MultiEventRegistrationForm(forms.Form):
         if not chosen:
             raise forms.ValidationError("Select at least one segment.")
         return chosen
-
-
-class CampusAmbassadorForm(forms.ModelForm):
-    class Meta:
-        model = CampusAmbassadorApplication
-        fields = [
-            "full_name", "email", "phone", "school", "class_name",
-            "district", "motivation", "facebook_url",
-        ]
-        widgets = {
-            "motivation": forms.Textarea(attrs={"rows": 4}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.setdefault("class", "form-input")
-        self.fields["motivation"].label = "About You"
-
-    def save(self, commit=True):
-        # The form no longer asks for institution separately — the required
-        # school selection is the source of truth, mirrored onto the record
-        # so admin search, emails and legacy displays keep working.
-        app = super().save(commit=False)
-        if app.school_id:
-            app.institution = app.school.name
-        if commit:
-            app.save()
-        return app

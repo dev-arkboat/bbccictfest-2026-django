@@ -10,7 +10,7 @@ class StaticSitemap(Sitemap):
 
     def items(self):
         return ["core:home", "core:arcade", "core:reviews", "registrations:events",
-                "registrations:ca_apply", "registrations:ca_list", "volunteers:list", "blog:list"]
+                "registrations:ca_list", "volunteers:list", "blog:list"]
 
     def location(self, item):
         return reverse(item)
@@ -34,14 +34,22 @@ class AmbassadorSitemap(Sitemap):
     priority = 0.6
 
     def items(self):
-        from registrations.models import CampusAmbassadorApplication
+        from django.contrib.auth import get_user_model
 
-        return CampusAmbassadorApplication.objects.filter(
-            status=CampusAmbassadorApplication.STATUS_APPROVED
+        from accounts.models import Role
+
+        return (
+            get_user_model()
+            .objects.filter(profile__role=Role.CAMPUS_AMBASSADOR)
+            .select_related("profile")
         )
 
+    def location(self, obj):
+        return reverse("registrations:ca_detail", kwargs={"pk": obj.pk})
+
     def lastmod(self, obj):
-        return obj.updated_at
+        profile = getattr(obj, "profile", None)
+        return getattr(profile, "updated_at", None)
 
 
 class ArcadeSitemap(Sitemap):
