@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error | BBCC ICT Fest 2026{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">500</span>
+    <h1 class="section-title">Something<br><span class="gradient-text">Broke</span></h1>
+    <p class="section-desc">Our team has been notified. Try again shortly.</p>
+    <div style="margin-top:24px;"><a href="{% url 'core:home' %}" class="btn btn-primary btn-sm">Back Home</a></div>
+  </div>
+</section>
+{% endblock %}

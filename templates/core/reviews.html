@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">Reviews</span>
+    <h1 class="section-title">What People<br><span class="gradient-text">Say About Us</span></h1>
+    <p class="section-desc">{% if rating_count %}<span class="stars">★★★★★</span> {{ rating_avg }}/5 from {{ rating_count }} review{{ rating_count|pluralize }}{% else %}No reviews yet — be the first!{% endif %}</p>
+    <div style="margin-top:24px;">
+      {% if user.is_authenticated %}
+      <a href="{% url 'core:review_write' %}" class="btn btn-primary" data-magnetic>{% if my_review %}Edit Your Review{% else %}Write a Review{% endif %}</a>
+      {% else %}
+      <a href="{% url 'accounts:login' %}?next={% url 'core:review_write' %}" class="btn btn-primary" data-magnetic>Login to Review</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="reviews-grid">
+      {% for review in reviews %}
+      <div class="review-card" data-reveal>
+        <div class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+        <p>"{{ review.comment }}"</p>
+        <div class="review-who">
+          <div class="review-ava">{% if review.user.profile.avatar_url %}<img src="{{ review.user.profile.avatar_url }}" alt="{{ review.user.username }}">{% else %}{{ review.user.username|slice:":2"|upper }}{% endif %}</div>
+          <div><b><a href="{% url 'accounts:public_profile' review.user.username %}" style="color:var(--text);text-decoration:none;">{{ review.user.get_full_name|default:review.user.username }}</a></b><span>{{ review.updated_at|date:"M j, Y" }}</span></div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="review-card"><p>No reviews yet.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

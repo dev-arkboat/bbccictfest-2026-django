@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found | BBCC ICT Fest 2026{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">404</span>
+    <h1 class="section-title">Lost in<br><span class="gradient-text">the Grid?</span></h1>
+    <p class="section-desc">That page doesn't exist.</p>
+    <div style="margin-top:24px;"><a href="{% url 'core:home' %}" class="btn btn-primary btn-sm">Back Home</a></div>
+  </div>
+</section>
+{% endblock %}

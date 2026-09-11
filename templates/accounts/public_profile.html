@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile_user.username }} | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="review-ava" style="width:84px;height:84px;font-size:28px;margin:0 auto 18px;">{% if profile_user.profile.avatar_url %}<img src="{{ profile_user.profile.avatar_url }}" alt="{{ profile_user.username }}">{% else %}{{ profile_user.username|slice:":2"|upper }}{% endif %}</div>
+    <span class="section-tag">{{ profile_user.profile.get_role_display }}</span>
+    <h1 class="section-title">{{ profile_user.get_full_name|default:profile_user.username }}</h1>
+    <p class="section-desc">@{{ profile_user.username }}{% if profile_user.profile.institution %} · {{ profile_user.profile.institution }}{% endif %}</p>
+    {% if profile_user.profile.bio %}<p class="section-desc" style="margin-top:10px;">{{ profile_user.profile.bio }}</p>{% endif %}
+  </div>
+</section>
+
+{% if review %}
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="form-wrap">
+      <div class="review-card">
+        <div class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+        <p>"{{ review.comment }}"</p>
+        <div class="review-who"><div><b>{{ profile_user.get_full_name|default:profile_user.username }}</b><span>{{ review.updated_at|date:"M j, Y" }}</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

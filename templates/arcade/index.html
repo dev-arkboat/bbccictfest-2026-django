@@ -1,0 +1,32 @@
+{% extends "arcade/base.html" %}
+{% load static %}
+
+{% block title %}BBCC Arcade — Free Browser Games | BBCC ICT Fest 2026{% endblock %}
+{% block meta_description %}<meta name="description" content="Play free browser games — Snake, Tetris, 2048, Flappy Bird, Pong, Breakout, Memory, Minesweeper, Doom and classic Pokémon games — on the BBCC Arcade.">{% endblock %}
+
+{% block arcade_content %}
+<section class="arcade-hero">
+    <div class="container">
+      <span class="arcade-tag">Free Browser Games</span>
+      <h1 class="arcade-title">The <span class="gradient-text" style="background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">BBCC Arcade</span></h1>
+      <p class="arcade-sub">Twenty-five classic games, free to play in your browser — including the full Pokémon collection from Game Boy, Game Boy Color and Game Boy Advance. Beat your high score, challenge a friend, and take a break between competitions.</p>
+    </div>
+  </section>
+  <section class="game-grid">
+    <div class="container game-grid-inner">
+      {% for game in games %}
+      <a href="{{ game.get_absolute_url }}" class="game-card" data-card>
+        <div class="game-ico {{ game.icon_class }}">
+          {{ game.icon_svg|safe }}
+        </div>
+        <h3>{{ game.title }}</h3>
+        <p>{{ game.description }}</p>
+        <div class="game-meta">
+          <span class="game-diff">{{ game.difficulty }}</span>
+          <span class="game-play">Play <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,604 @@
+{
+  "chips": [
+    {
+      "html": "$ <b>fest</b> --kickoff --sep-19",
+      "css_class": "chip-1"
+    },
+    {
+      "html": "print(<b>\"Let's Build\"</b>)",
+      "css_class": "chip-2"
+    },
+    {
+      "html": "while(<b>curious</b>) { learn(); }",
+      "css_class": "chip-3"
+    },
+    {
+      "html": "&lt;/&gt; <b>ctrl+s</b> your dreams",
+      "css_class": "chip-4"
+    }
+  ],
+  "ticker": [
+    "<b>//</b> SEP 19, 2026",
+    "ICT QUIZ",
+    "SCIENCE PROJECT SHOWDOWN",
+    "CODING COMPETITION",
+    "<b>1000+</b> PARTICIPANTS",
+    "TANGAIL, BD",
+    "REGISTRATION <b>OPENING SOON</b>"
+  ],
+  "stats": [
+    {
+      "value": 5,
+      "suffix": "",
+      "label": "Competitions"
+    },
+    {
+      "value": 1000,
+      "suffix": "+",
+      "label": "Participants"
+    },
+    {
+      "value": 30,
+      "suffix": "+",
+      "label": "Schools"
+    },
+    {
+      "value": 1,
+      "suffix": "",
+      "label": "Grand Day"
+    }
+  ],
+  "competitions": [
+    {
+      "title": "ICT Quiz",
+      "description": "Test your knowledge of information technology, computer science, and digital innovations. Open to all no prior registration required for on-the-spot participation.",
+      "icon_class": "comp-icon-1",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><line x1=\"12\" y1=\"17\" x2=\"12.01\" y2=\"17\"/></svg>",
+      "tags": [
+        [
+          "comp-tag-highlight",
+          true
+        ],
+        [
+          "",
+          false
+        ]
+      ],
+      "details": [
+        "On-the-spot registration available"
+      ],
+      "slug": "ict-quiz"
+    },
+    {
+      "title": "Innovation Idea &amp; Science Project Showdown",
+      "description": "Represent your school with a team of 2 students and 1 teacher. Each school gets a dedicated stall. After selection rounds, the top 10 teams compete on the main stage.",
+      "icon_class": "comp-icon-2",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 2L2 7l10 5 10-5-10-5z\"/><path d=\"M2 17l10 5 10-5\"/><path d=\"M2 12l10 5 10-5\"/></svg>",
+      "tags": [
+        [
+          "comp-tag-highlight",
+          true
+        ],
+        [
+          "",
+          false
+        ],
+        [
+          "",
+          false
+        ]
+      ],
+      "details": [
+        "Selection rounds Top 10 teams on fest day",
+        "Dedicated exhibition stall per school"
+      ],
+      "slug": "science-showdown"
+    },
+    {
+      "title": "Coding Competition",
+      "description": "A solo challenge where you solve real-world programming problems under time pressure. After online selection rounds, the top 10 coders battle it out on the main stage.",
+      "icon_class": "comp-icon-3",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"16 18 22 12 16 6\"/><polyline points=\"8 6 2 12 8 18\"/></svg>",
+      "tags": [
+        [
+          "comp-tag-highlight",
+          true
+        ],
+        [
+          "",
+          false
+        ],
+        [
+          "",
+          false
+        ]
+      ],
+      "details": [
+        "Selection rounds Top 5 finalists",
+        "Solve practical algorithmic problems"
+      ],
+      "slug": "coding"
+    },
+    {
+      "title": "Chess",
+      "description": "A battle of strategy and patience on the 64-square board. Outthink your opponents in knockout rounds to be crowned the ICT Fest chess champion. Free to register.",
+      "icon_class": "comp-icon-4",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3a9 9 0 1 0 9 9\"/><path d=\"M12 7v5l3 2\"/><path d=\"M3 12h2M12 3v2M19 12h2M5 5l1.5 1.5M19 5l-1.5 1.5\"/></svg>",
+      "tags": [
+        [
+          "comp-tag-highlight",
+          true
+        ],
+        [
+          "",
+          false
+        ],
+        [
+          "",
+          false
+        ]
+      ],
+      "details": [
+        "Free registration open to all",
+        "Strategy &amp; tactical play"
+      ],
+      "slug": "chess"
+    },
+    {
+      "title": "Rubik's Cube",
+      "description": "Race against the clock to solve the classic 3x3 cube. Speed and muscle memory decide the winner in head-to-head timed solves. We select the top 5 cubers who then perform their finals live, directly in front of the judges. Free to register.",
+      "icon_class": "comp-icon-5",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"3\"/><path d=\"M3 9h18M3 15h18M9 3v18M15 3v18\"/></svg>",
+      "tags": [
+        [
+          "comp-tag-highlight",
+          true
+        ],
+        [
+          "",
+          false
+        ],
+        [
+          "",
+          false
+        ]
+      ],
+      "details": [
+        "No need for registration, open to all.",
+        "Participants must bring their own cube",
+        "Top 5 cubers face final round live before the judges"
+      ],
+      "slug": "rubiks-cube"
+    }
+  ],
+  "timeline": [
+    {
+      "dot": "tl-dot-1",
+      "no": "1",
+      "tag": "Step 01 Register",
+      "title": "Registration Opens",
+      "text": "Schools register for the Science Project Showdown (2 students + 1 teacher per team). Individuals sign up for the Coding Competition. Quiz and all participants can register on the spot."
+    },
+    {
+      "dot": "tl-dot-2",
+      "no": "2",
+      "tag": "Step 02 Qualify",
+      "title": "Selection Rounds",
+      "text": "Online screening for Science Project and Coding events. Judges evaluate submissions and select the top 10 teams (Science) and top 5 individuals (Coding) to advance to the main event."
+    },
+    {
+      "dot": "tl-dot-3",
+      "no": "3",
+      "tag": "Step 03 Fest Day",
+      "title": "Fest Day Grand Event",
+      "text": "A full day at Bindubasini Boys' School: live quiz, science project exhibitions at school stalls, coding finale, chess, rubik's cube, special guest sessions, and cultural programs."
+    },
+    {
+      "dot": "tl-dot-4",
+      "no": "4",
+      "tag": "Step 04 Celebrate",
+      "title": "Awards &amp; Recognition",
+      "text": "To be announced a surprise awaits! We're preparing something truly special for our winners. Stay tuned for the big reveal."
+    }
+  ],
+  "guests": [
+    {
+      "name": "To Be Announced",
+      "role": "Chief Guest",
+      "bio": "We are in talks with a distinguished personality. The name will be revealed soon stay tuned for an exciting announcement!",
+      "avatar_class": "g-a1",
+      "featured": true,
+      "image_url": ""
+    },
+    {
+      "name": "To Be Announced",
+      "role": "Special Guest",
+      "bio": "An eminent figure from the world of technology and education will join us. Details coming shortly!",
+      "avatar_class": "g-a2",
+      "featured": false,
+      "image_url": ""
+    },
+    {
+      "name": "To Be Announced",
+      "role": "Guest of Honor",
+      "bio": "A surprise guest with an incredible story. We can't wait to share who it is follow us for updates!",
+      "avatar_class": "g-a3",
+      "featured": false,
+      "image_url": ""
+    }
+  ],
+  "committee": [
+    {
+      "name": "Adviser Panel (Teachers)",
+      "slug": "advisers",
+      "members": [
+        {
+          "name": "Tofazzol Hossen Sir",
+          "role": "Chief Adviser",
+          "image_url": ""
+        },
+        {
+          "name": "Kaiser Sir",
+          "role": "Adviser",
+          "image_url": ""
+        },
+        {
+          "name": "A. N. M. Bazlur Rahman Sir",
+          "role": "Adviser",
+          "image_url": ""
+        },
+        {
+          "name": "Rustom Sir",
+          "role": "Adviser",
+          "image_url": ""
+        },
+        {
+          "name": "Shahin Al Mamun Sir",
+          "role": "Adviser",
+          "image_url": ""
+        },
+        {
+          "name": "Aminul Haque Sir",
+          "role": "Adviser",
+          "image_url": ""
+        },
+        {
+          "name": "Farid Sir",
+          "role": "Adviser",
+          "image_url": ""
+        },
+        {
+          "name": "Shuvo Sir",
+          "role": "Adviser",
+          "image_url": ""
+        },
+        {
+          "name": "Jakaria Sir",
+          "role": "Adviser",
+          "image_url": ""
+        }
+      ]
+    },
+    {
+      "name": "Segment Heads",
+      "slug": "segment-heads",
+      "members": [
+        {
+          "name": "Xman Cuber",
+          "role": "Segment Head — Rubik's Cube",
+          "image_url": "https://bbccictfest.pro.bd/static/members/xman.jpg"
+        },
+        {
+          "name": "Samir Talukder",
+          "role": "Segment Head — Coding",
+          "image_url": "https://bbccictfest.pro.bd/static/members/samir.jpg"
+        },
+        {
+          "name": "Abu Salehin",
+          "role": "Segment Head — Innovation Idea",
+          "image_url": "https://bbccictfest.pro.bd/static/members/abu-salehin.jpg"
+        },
+        {
+          "name": "Azizul Islam",
+          "role": "Segment Head — ICT Quiz",
+          "image_url": "https://bbccictfest.pro.bd/static/members/azizul-islam.jpg"
+        },
+        {
+          "name": "Sun",
+          "role": "Segment Head — Chess",
+          "image_url": "https://bbccictfest.pro.bd/static/members/sun.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Executive Committee",
+      "slug": "executive-committee",
+      "members": [
+        {
+          "name": "Samir Talukder",
+          "role": "President",
+          "image_url": "https://bbccictfest.pro.bd/static/members/samir.jpg"
+        },
+        {
+          "name": "Abu Salehin",
+          "role": "General Secretary (GS)",
+          "image_url": "https://bbccictfest.pro.bd/static/members/abu-salehin.jpg"
+        },
+        {
+          "name": "Azizul Islam",
+          "role": "Vice President",
+          "image_url": "https://bbccictfest.pro.bd/static/members/azizul-islam.jpg"
+        },
+        {
+          "name": "Shawcho",
+          "role": "Vice President",
+          "image_url": "https://bbccictfest.pro.bd/static/members/shawcho.jpg"
+        },
+        {
+          "name": "Sazidur Rahman",
+          "role": "Assistant General Secretary (AGS)",
+          "image_url": "https://bbccictfest.pro.bd/static/members/sazidur-rahman.jpg"
+        },
+        {
+          "name": "Nuren Zarif Haque",
+          "role": "Programming Secretary",
+          "image_url": ""
+        },
+        {
+          "name": "Shuddo Pandit",
+          "role": "Joint Secretary",
+          "image_url": "https://bbccictfest.pro.bd/static/members/shuddo-pandit.jpg"
+        },
+        {
+          "name": "Shafiq Muammer",
+          "role": "Office Secretary",
+          "image_url": "https://bbccictfest.pro.bd/static/members/shafiq-muammer.jpg"
+        },
+        {
+          "name": "Hasan Tasauf Khan",
+          "role": "Assistant Office Secretary",
+          "image_url": "https://bbccictfest.pro.bd/static/members/hasan-tasauf-khan.jpg"
+        },
+        {
+          "name": "Shahol Islam Soad",
+          "role": "Public Relation Secretary",
+          "image_url": "https://bbccictfest.pro.bd/static/members/shahol-islam-soad.jpg"
+        },
+        {
+          "name": "Jubayer Ahmed",
+          "role": "Communication Secretary",
+          "image_url": "https://bbccictfest.pro.bd/static/members/jubayer-ahmed.jpg"
+        },
+        {
+          "name": "Shariful Islam Sumon",
+          "role": "Human Resources Secretary",
+          "image_url": "https://bbccictfest.pro.bd/static/members/shariful-islam-sumon.jpg"
+        },
+        {
+          "name": "Abir",
+          "role": "Assistant Human Resources Secretary",
+          "image_url": ""
+        },
+        {
+          "name": "Azizul Islam",
+          "role": "Treasurer",
+          "image_url": "https://bbccictfest.pro.bd/static/members/azizul-islam.jpg"
+        },
+        {
+          "name": "Alve Shafi",
+          "role": "Assistant Programming Secretary",
+          "image_url": "https://bbccictfest.pro.bd/static/members/alve-shafi.jpg"
+        },
+        {
+          "name": "Al Amin",
+          "role": "Graphic &amp; Illustration Secretary",
+          "image_url": "https://bbccictfest.pro.bd/static/members/al-amin.jpg"
+        }
+      ]
+    },
+    {
+      "name": "Executive Member Panel",
+      "slug": "executive-members",
+      "members": [
+        {
+          "name": "Saad Mohammad OBAIDULLAH",
+          "role": "Executive Member",
+          "image_url": "https://bbccictfest.pro.bd/static/members/saad-mohammad-obaidullah.jpg"
+        },
+        {
+          "name": "Raiyan Sarwaor",
+          "role": "Executive Member",
+          "image_url": "https://bbccictfest.pro.bd/static/members/raiyan-sarwaor.jpg"
+        },
+        {
+          "name": "Shah Neyamot Ullah",
+          "role": "Executive Member",
+          "image_url": "https://bbccictfest.pro.bd/static/members/shah-neyamot-ullah.jpg"
+        },
+        {
+          "name": "Shayon",
+          "role": "Executive Member",
+          "image_url": ""
+        },
+        {
+          "name": "Asaduzzman Joy",
+          "role": "Executive Member",
+          "image_url": ""
+        }
+      ]
+    }
+  ],
+  "sponsors": [
+    {
+      "name": "To Be Announced",
+      "surprise": false
+    },
+    {
+      "name": "Surprise!",
+      "surprise": true
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Who can participate?",
+      "a": "Students from class 6-10 can participate. The ICT Quiz is open to all individuals. The Science Project Showdown requires school-based teams (2 students + 1 teacher). The Coding Competition is open to individual participants."
+    },
+    {
+      "q": "Is there a registration fee?",
+      "a": "For the Quiz section the fee is 19 BDT, for the Coding Competition the fee is 49 BDT, and the other sections are free."
+    },
+    {
+      "q": "How do the selection rounds work?",
+      "a": "For the Science Project Showdown and Coding Competition, online screening rounds will be conducted. Top 10 teams (Science) and top 5 individuals (Coding) advance to fest day. The ICT Quiz is held live with no prior selection."
+    },
+    {
+      "q": "What do we bring for the Science Showdown?",
+      "a": "Selected teams can bring a powerpoint presentation or any presentation on a pen drive, science project or any mean, with which they can showcase their idea or project."
+    },
+    {
+      "q": "Which programming languages are allowed?",
+      "a": "Selected participants will be notified. Specific guidelines and problem formats will be shared with selected finalists before the fest."
+    },
+    {
+      "q": "How can my school register?",
+      "a": "Schools register through the official form for the Science Project Showdown (2 students + 1 teacher). Students can register individually for other events. The registration link is available on the website and our Facebook page. Participants can also register via physical forms."
+    }
+  ],
+  "games": [
+    {
+      "title": "Doom",
+      "slug": "doom",
+      "description": "The 1993 original FPS, running on DOSBox in your browser. Click to grab the mouse and rip and tear.",
+      "difficulty": "Legendary",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"5\"/><line x1=\"12\" y1=\"2\" x2=\"12\" y2=\"6\"/><line x1=\"12\" y1=\"18\" x2=\"12\" y2=\"22\"/><line x1=\"2\" y1=\"12\" x2=\"6\" y2=\"12\"/><line x1=\"18\" y1=\"12\" x2=\"22\" y2=\"12\"/></svg>",
+      "icon_class": "g-9",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Pokémon",
+      "slug": "pokemon",
+      "description": "All eleven official Pokémon games from the Game Boy era — Red, Blue, Yellow, Gold, Silver, Crystal, Ruby, Sapphire, Emerald, FireRed and LeafGreen.",
+      "difficulty": "GB · GBC · GBA",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z\"/><line x1=\"2\" y1=\"12\" x2=\"22\" y2=\"12\"/><circle cx=\"12\" cy=\"12\" r=\"3.2\"/><circle cx=\"12\" cy=\"12\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\"/></svg>",
+      "icon_class": "g-21",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Snake",
+      "slug": "snake",
+      "description": "Grow the snake, eat the food, don't hit the walls. The classic that started it all.",
+      "difficulty": "Easy",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 11h4a3 3 0 0 0 0-6H3v16\"/><path d=\"M21 5v6a4 4 0 0 1-4 4h-7\"/><circle cx=\"17\" cy=\"19\" r=\"1.5\"/></svg>",
+      "icon_class": "g-1",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Tetris",
+      "slug": "tetris",
+      "description": "Stack the falling blocks, clear the lines, survive as long as you can.",
+      "difficulty": "Medium",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"11\" y=\"3\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"3\" y=\"11\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"11\" y=\"11\" width=\"6\" height=\"6\" rx=\"1\"/><rect x=\"11\" y=\"19\" width=\"6\" height=\"3\" rx=\"1\"/></svg>",
+      "icon_class": "g-2",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "2048",
+      "slug": "2048",
+      "description": "Slide and merge the tiles. Can you reach the legendary 2048 tile?",
+      "difficulty": "Medium",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"4\"/><rect x=\"6.5\" y=\"6.5\" width=\"5\" height=\"5\" rx=\"1\"/><rect x=\"12.5\" y=\"6.5\" width=\"5\" height=\"5\" rx=\"1\"/><rect x=\"6.5\" y=\"12.5\" width=\"5\" height=\"5\" rx=\"1\"/><rect x=\"12.5\" y=\"12.5\" width=\"5\" height=\"5\" rx=\"1\"/></svg>",
+      "icon_class": "g-3",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Memory Match",
+      "slug": "memory",
+      "description": "Flip the cards and find every pair. A test of focus and recall.",
+      "difficulty": "Easy",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"14\" height=\"16\" rx=\"3\"/><rect x=\"7\" y=\"2\" width=\"14\" height=\"16\" rx=\"3\"/><path d=\"m7 10 2 2 3-4\"/></svg>",
+      "icon_class": "g-4",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Flappy Bird",
+      "slug": "flappy",
+      "description": "Tap to flap, dodge the pipes, and see how far you can fly.",
+      "difficulty": "Hard",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 12c4-3 7-3 10-2 3 1 6 0 8-3 0 3-1 5-3 7 2 1 3 3 3 6-3-1-5-2-8-2-3 0-7 1-10 3 0-3 1-5 3-6-1-1-2-2-3-3z\"/></svg>",
+      "icon_class": "g-5",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Breakout",
+      "slug": "breakout",
+      "description": "Smash every brick with the bouncing ball. The paddle is in your hands.",
+      "difficulty": "Medium",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"8\" height=\"6\" rx=\"1\"/><rect x=\"13\" y=\"3\" width=\"8\" height=\"6\" rx=\"1\"/><rect x=\"3\" y=\"11\" width=\"8\" height=\"6\" rx=\"1\"/><rect x=\"13\" y=\"11\" width=\"8\" height=\"6\" rx=\"1\"/><rect x=\"8\" y=\"19\" width=\"8\" height=\"3\" rx=\"1\"/><circle cx=\"17.5\" cy=\"17\" r=\"1.8\"/></svg>",
+      "icon_class": "g-6",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Pong",
+      "slug": "pong",
+      "description": "The original arcade duel. You against the machine — first to 7 wins.",
+      "difficulty": "Easy",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"6\" width=\"3\" height=\"12\" rx=\"1.5\"/><rect x=\"18\" y=\"6\" width=\"3\" height=\"12\" rx=\"1.5\"/><circle cx=\"12\" cy=\"12\" r=\"2.5\"/><line x1=\"12\" y1=\"2\" x2=\"12\" y2=\"22\" stroke-dasharray=\"3 4\"/></svg>",
+      "icon_class": "g-7",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Minesweeper",
+      "slug": "minesweeper",
+      "description": "Clear the grid without detonating a single mine. Careful where you click.",
+      "difficulty": "Hard",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"4\"/><line x1=\"3\" y1=\"9\" x2=\"21\" y2=\"9\"/><line x1=\"3\" y1=\"15\" x2=\"21\" y2=\"15\"/><line x1=\"9\" y1=\"3\" x2=\"9\" y2=\"21\"/><line x1=\"15\" y1=\"3\" x2=\"15\" y2=\"21\"/><circle cx=\"12\" cy=\"12\" r=\"1.6\" fill=\"currentColor\" stroke=\"none\"/></svg>",
+      "icon_class": "g-8",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Wolfenstein 3D",
+      "slug": "wolf3d",
+      "description": "The 1992 FPS that started it all. Escape Castle Wolfenstein and gun down the guards.",
+      "difficulty": "Classic",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 21V10l4-3V4l2 1 2-3 2 3 2-1v3l4 3v11z\"/><line x1=\"4\" y1=\"21\" x2=\"20\" y2=\"21\"/></svg>",
+      "icon_class": "g-10",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Doom II",
+      "slug": "doom2",
+      "description": "The 1994 sequel — 32 levels of hell on Earth. The super shotgun awaits.",
+      "difficulty": "Legendary",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"10\" r=\"6\"/><path d=\"M8 14c.7 2 2 3 4 3s3.3-1 4-3\"/><circle cx=\"9.5\" cy=\"9\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"14.5\" cy=\"9\" r=\"1.1\" fill=\"currentColor\" stroke=\"none\"/><path d=\"m10.5 17 .5 2.5M13.5 17l-.5 2.5\"/></svg>",
+      "icon_class": "g-11",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Heretic",
+      "slug": "heretic",
+      "description": "Raven's 1994 fantasy Doom — magic weapons, items and a stake for every heart.",
+      "difficulty": "Retro",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10 2h4\"/><path d=\"M11 2v5l-4.5 8a3 3 0 0 0 2.6 4.5h5.8a3 3 0 0 0 2.6-4.5L13 7V2\"/><path d=\"M7.5 14h9\"/></svg>",
+      "icon_class": "g-12",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Quake",
+      "slug": "quake",
+      "description": "The 1996 fully-3D revolution. Shareware episode — watch out for ogres.",
+      "difficulty": "Legendary",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 2 3 7v10l9 5 9-5V7z\"/><path d=\"M3 7l9 5 9-5\"/><path d=\"M12 12v10\"/></svg>",
+      "icon_class": "g-13",
+      "accent_color": "#FF7A1A"
+    },
+    {
+      "title": "Commander Keen",
+      "slug": "keen",
+      "description": "The 1990 Mars platformer from the team that later made Doom. Jump in!",
+      "difficulty": "Retro",
+      "icon_svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"5\"/><ellipse cx=\"12\" cy=\"12\" rx=\"10\" ry=\"3.4\" transform=\"rotate(-20 12 12)\"/></svg>",
+      "icon_class": "g-14",
+      "accent_color": "#FF7A1A"
+    }
+  ]
+}

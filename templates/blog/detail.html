@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | Blog{% endblock %}
+{% block meta_description %}<meta name="description" content="{{ post.excerpt|default:post.content|truncatewords:30 }}">{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container" style="max-width:760px;">
+    <span class="section-tag">Blog</span>
+    <h1 class="section-title" style="font-size:clamp(28px,4vw,44px);">{{ post.title }}</h1>
+    <p class="blog-meta">{{ post.published_at|date:"M j, Y" }} · by {{ post.author.get_full_name|default:post.author.username }} · {{ post.likes_count }} like{{ post.likes_count|pluralize }} · {{ comments|length }} comment{{ comments|length|pluralize }}</p>
+    {% if post.cover_image_url %}<img class="blog-cover" style="height:auto;max-height:380px;margin-top:24px;" src="{{ post.cover_image_url }}" alt="{{ post.title }}">{% endif %}
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container" style="max-width:760px;">
+    <div class="comp-card">
+      <div style="font-size:15.5px;color:var(--text-2);line-height:1.85;">{{ post.content|linebreaks }}</div>
+      <div style="margin-top:22px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <form method="post" action="{% url 'blog:like' post.slug %}">{% csrf_token %}
+          <button type="submit" class="like-btn{% if liked %} liked{% endif %}">{% if liked %}♥ Liked{% else %}♡ Like{% endif %} ({{ post.likes_count }})</button>
+        </form>
+        <a href="{% url 'blog:list' %}" class="btn btn-outline btn-sm">All Posts</a>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="font-size:24px;margin:44px 0 20px;">Comments ({{ comments|length }})</h2>
+    <div class="form-grid">
+      {% for c in comments %}
+      <div class="comment-card">
+        <div class="review-who" style="margin-bottom:8px;">
+          <div class="review-ava">{% if c.author.profile.avatar_url %}<img src="{{ c.author.profile.avatar_url }}" alt="{{ c.author.username }}">{% else %}{{ c.author.username|slice:":2"|upper }}{% endif %}</div>
+          <div><b>{{ c.author.get_full_name|default:c.author.username }}</b><span>{{ c.created_at|date:"M j, Y H:i" }}</span></div>
+        </div>
+        <p>{{ c.body|linebreaksbr }}</p>
+        {% if user == c.author or user.is_staff %}
+        <form method="post" action="{% url 'blog:comment_delete' c.pk %}" style="margin-top:10px;" onsubmit="return confirm('Delete this comment?');">{% csrf_token %}<button type="submit" class="btn btn-outline btn-sm">Delete</button></form>
+        {% endif %}
+      </div>
+      {% empty %}
+      <p class="section-desc">No comments yet — start the discussion.</p>
+      {% endfor %}
+    </div>
+
+    <div class="comp-card" style="margin-top:28px;">
+      <h3 style="margin-bottom:14px;">Leave a comment</h3>
+      {% if user.is_authenticated %}
+      <form method="post" action="{% url 'blog:comment' post.slug %}" class="form-grid">
+        {% csrf_token %}
+        <div class="form-field">{{ comment_form.body }}{% if comment_form.body.errors %}<ul class="form-errors">{% for e in comment_form.body.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}</div>
+        <div><button type="submit" class="btn btn-primary btn-sm">Post Comment</button></div>
+      </form>
+      {% else %}
+      <p class="comp-desc"><a href="{% url 'accounts:login' %}?next={{ post.get_absolute_url }}" style="color:var(--ember);">Login</a> to join the discussion.</p>
+      {% endif %}
+    </div>
+
+    {% if related %}
+    <h2 class="section-title" style="font-size:24px;margin:44px 0 20px;">More Posts</h2>
+    <div class="comp-grid" style="grid-template-columns:repeat(3,1fr);">
+      {% for r in related %}
+      <div class="comp-card"><h3 style="font-size:17px;">{{ r.title }}</h3><div style="margin-top:12px;"><a href="{{ r.get_absolute_url }}" class="btn btn-outline btn-sm">Read</a></div></div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Registrations — Fest Day | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">Gate Tool</span>
+    <h1 class="section-title">Verify<br><span class="gradient-text">Registrations</span></h1>
+    <p class="section-desc">Search by phone, reference number, serial number, name, school, email or class — then tick check-in at the gate.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="comp-card" style="margin-bottom:24px;">
+      <form method="get" class="form-grid">
+        <div class="form-field">
+          <label for="id_q">Search</label>
+          <input type="search" name="q" id="id_q" class="form-input" placeholder="Name, phone, BBCC26-00001, serial, school, email, class…" value="{{ q }}" autocomplete="off">
+        </div>
+        <div class="form-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+          <div class="form-field">
+            <label for="id_event">Event</label>
+            <select name="event" id="id_event" class="form-input">
+              <option value="">All events</option>
+              {% for e in events %}<option value="{{ e.pk }}"{% if f.event == e.pk|stringformat:"s" %} selected{% endif %}>{{ e.name }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="id_status">Status</label>
+            <select name="status" id="id_status" class="form-input">
+              <option value="">Any status</option>
+              {% for value, label in statuses %}<option value="{{ value }}"{% if f.status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="id_school">School</label>
+            <select name="school" id="id_school" class="form-input">
+              <option value="">All schools</option>
+              {% for s in schools %}<option value="{{ s.pk }}"{% if f.school == s.pk|stringformat:"s" %} selected{% endif %}>{{ s.name }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="id_checked">Check-in</label>
+            <select name="checked_in" id="id_checked" class="form-input">
+              <option value="">Checked + not</option>
+              <option value="1"{% if f.checked_in == "1" %} selected{% endif %}>Checked in</option>
+              <option value="0"{% if f.checked_in == "0" %} selected{% endif %}>Not checked in</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary btn-sm">Search</button>
+          <a href="{% url 'registrations:verify' %}" class="btn btn-outline btn-sm">Clear</a>
+        </div>
+      </form>
+    </div>
+
+    <p class="blog-meta" style="margin-bottom:12px;">{{ total }} registration{{ total|pluralize }} found</p>
+    <div class="table-wrap"><table class="fest-table">
+      <tr><th>Reference</th><th>Serial</th><th>Name</th><th>Phone</th><th>Event</th><th>School</th><th>Class</th><th>Status</th><th>Entry</th></tr>
+      {% for r in page %}
+      <tr>
+        <td><b>{{ r.reference }}</b></td>
+        <td>{{ r.serial_number|default:"—" }}</td>
+        <td>{{ r.full_name }}<br><span class="blog-meta">{{ r.email }}</span></td>
+        <td>{{ r.phone }}</td>
+        <td>{{ r.event.name }}</td>
+        <td>{% if r.school %}{{ r.school.name }}{% else %}{{ r.institution }}{% endif %}</td>
+        <td>{{ r.get_class_name_display }}</td>
+        <td><span class="status-pill status-{{ r.status }}">{{ r.get_status_display }}</span></td>
+        <td>
+          {% if r.checked_in %}
+          <span class="status-pill status-confirmed">In ✓</span>
+          {% endif %}
+          <form method="post" action="{% url 'registrations:check_in' r.pk %}" style="display:inline;margin-top:4px;">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit" class="btn btn-outline btn-sm">{% if r.checked_in %}Undo{% else %}Check in{% endif %}</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="9">No registrations match. Try a different search.</td></tr>
+      {% endfor %}
+    </table></div>
+
+    {% if page.has_other_pages %}
+    <div class="cta-actions" style="margin-top:20px;">
+      {% if page.has_previous %}<a href="?q={{ q|urlencode }}&event={{ f.event }}&status={{ f.status }}&school={{ f.school }}&checked_in={{ f.checked_in }}&page={{ page.previous_page_number }}" class="btn btn-outline btn-sm">← Prev</a>{% endif %}
+      <span class="blog-meta">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}<a href="?q={{ q|urlencode }}&event={{ f.event }}&status={{ f.status }}&school={{ f.school }}&checked_in={{ f.checked_in }}&page={{ page.next_page_number }}" class="btn btn-outline btn-sm">Next →</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

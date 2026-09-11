@@ -1,0 +1,1 @@
+<div class="star-rating" role="radiogroup"{% if widget.attrs.aria_label %} aria-label="{{ widget.attrs.aria_label }}"{% endif %}>{% for group_name, options, index in widget.optgroups reversed %}{% for option in options %}{% include option.template_name with widget=option %}{% endfor %}{% endfor %}</div>

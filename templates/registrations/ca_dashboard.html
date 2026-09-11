@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}My School Team | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">Campus Ambassador</span>
+    <h1 class="section-title">{{ school.name }}</h1>
+    <p class="section-desc">Ambassador: {{ application.full_name }} · {{ volunteers|length }} volunteer{{ volunteers|length|pluralize }} · {{ participants|length }} participant{{ participants|length|pluralize }}</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="comp-card" style="margin-bottom:24px;">
+      <form method="get" class="form-grid">
+        <div class="form-grid" style="grid-template-columns:1fr 220px auto;align-items:end;">
+          <div class="form-field">
+            <label for="id_q">Search your school</label>
+            <input type="search" name="q" id="id_q" class="form-input" placeholder="Name, phone, email, class, reference…" value="{{ q }}" autocomplete="off">
+          </div>
+          <div class="form-field">
+            <label for="id_event">Event</label>
+            <select name="event" id="id_event" class="form-input">
+              <option value="">All events</option>
+              {% for e in events %}<option value="{{ e.pk }}"{% if event_id == e.pk|stringformat:"s" %} selected{% endif %}>{{ e.name }}</option>{% endfor %}
+            </select>
+          </div>
+          <div><button type="submit" class="btn btn-primary btn-sm">Search</button></div>
+        </div>
+      </form>
+    </div>
+
+    <div class="committee-subhead" data-reveal>Participants</div>
+    {% if participants %}
+    <div class="table-wrap"><table class="fest-table">
+      <tr><th>Reference</th><th>Name</th><th>Event</th><th>Class</th><th>Phone</th><th>Status</th></tr>
+      {% for p in participants %}
+      <tr>
+        <td><b>{{ p.reference }}</b></td>
+        <td>{{ p.full_name }}<br><span class="blog-meta">{{ p.email }}</span></td>
+        <td>{{ p.event.name }}</td>
+        <td>{{ p.get_class_name_display }}</td>
+        <td>{{ p.phone }}</td>
+        <td><span class="status-pill status-{{ p.status }}">{{ p.get_status_display }}</span></td>
+      </tr>
+      {% endfor %}
+    </table></div>
+    {% else %}
+    <p class="committee-note">No participants from {{ school.name }} match.</p>
+    {% endif %}
+
+    <div class="committee-subhead" data-reveal style="margin-top:44px;">Volunteers</div>
+    <div class="committee-grid">
+      {% for v in volunteers %}
+      <div class="member-card" data-reveal>
+        <a href="{{ v.get_absolute_url }}" style="text-decoration:none;color:inherit;display:block;">
+          <div class="member-photo">{% if v.image_url %}<img class="avatar-img" loading="lazy" decoding="async" width="74" height="74" src="{{ v.image_url }}" alt="{{ v.name }}" onerror="this.remove()">{% endif %}{{ v.initials }}</div>
+          <h4>{{ v.name }}</h4>
+        </a>
+        <div class="member-role">{{ v.role }}</div>
+        {% if v.phone %}<div class="member-role" style="margin-top:4px;">{{ v.phone }}</div>{% endif %}
+        {% if v.facebook_url %}<div style="margin-top:8px;"><a href="{{ v.facebook_url }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Facebook</a></div>{% endif %}
+      </div>
+      {% empty %}
+      <p class="committee-note">No volunteers assigned to {{ school.name }} yet. Ask the organizers to add them from the admin panel.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

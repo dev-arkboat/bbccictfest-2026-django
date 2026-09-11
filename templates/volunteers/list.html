@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Volunteers | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">Volunteers</span>
+    <h1 class="section-title">Meet Our<br><span class="gradient-text">Volunteers</span></h1>
+    <p class="section-desc">The students working behind the scenes to make the fest unforgettable.</p>
+  </div>
+</section>
+
+<section class="section" id="committee" style="padding-top:0;">
+  <div class="container">
+    <div class="committee-grid">
+      {% for v in volunteers %}
+      <a href="{{ v.get_absolute_url }}" class="member-card" data-reveal style="text-decoration:none;color:inherit;display:block;">
+        <div class="member-photo">{% if v.image_url %}<img class="avatar-img" loading="lazy" decoding="async" width="74" height="74" src="{{ v.image_url }}" alt="{{ v.name }}" onerror="this.remove()">{% endif %}{{ v.initials }}</div>
+        <h4>{{ v.name }}</h4>
+        <div class="member-role">{{ v.role }}</div>
+        {% if v.school %}<div class="member-role" style="margin-top:4px;">{{ v.school.name }}</div>{% endif %}
+        {% if v.bio %}<p style="font-size:13px;color:var(--text-2);margin-top:10px;">{{ v.bio }}</p>{% endif %}
+      </a>
+      {% empty %}
+      <p class="committee-note">Volunteer list coming soon.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

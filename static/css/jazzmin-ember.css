@@ -1,0 +1,86 @@
+/* Jazzmin ember overrides — matches the BBCC ICT Fest 2026 site design. */
+:root {
+  --ember: #FF7A1A;
+  --ember-2: #FF9D45;
+  --bg: #0A0908;
+  --bg-2: #100E0D;
+  --card: #16130F;
+  --grad: linear-gradient(120deg, #FFC24B, #FF7A1A 45%, #E2260E);
+}
+
+.main-header.navbar-dark {
+  background-color: #0A0908 !important;
+  border-bottom: 1px solid rgba(255, 122, 26, 0.28) !important;
+}
+
+.main-sidebar.sidebar-dark-primary {
+  background-color: #100E0D !important;
+}
+
+.brand-link {
+  background: linear-gradient(120deg, #FFC24B, #FF7A1A 45%, #E2260E) !important;
+  color: #1A0D02 !important;
+  font-weight: 700 !important;
+}
+.brand-link .brand-image {
+  opacity: 1 !important;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link.active {
+  background: linear-gradient(120deg, #FFC24B, #FF7A1A 45%, #E2260E) !important;
+  color: #1A0D02 !important;
+  font-weight: 600;
+}
+.sidebar-dark-primary .nav-sidebar .nav-link:hover {
+  background: rgba(255, 122, 26, 0.10) !important;
+  color: #FF9D45 !important;
+}
+
+.btn-primary {
+  background: linear-gradient(120deg, #FFC24B, #FF7A1A 45%, #E2260E) !important;
+  border: none !important;
+  color: #1A0D02 !important;
+  font-weight: 600;
+}
+
+.card-primary.card-outline {
+  border-top: 3px solid #FF7A1A !important;
+}
+
+.content-wrapper {
+  background-color: #0A0908 !important;
+  color: #F5F1EA !important;
+}
+
+.login-page, .register-page {
+  background: radial-gradient(ellipse 90% 60% at 50% -10%, rgba(255, 122, 26, 0.10) 0%, transparent 55%),
+    linear-gradient(180deg, #0A0908 0%, #100E0D 55%, #0A0908 100%) !important;
+}
+.login-box .card {
+  background-color: #16130F !important;
+  border: 1px solid rgba(255, 122, 26, 0.28) !important;
+  color: #F5F1EA !important;
+}
+.login-logo a {
+  color: #F5F1EA !important;
+  font-weight: 700;
+}
+/* Source logo is large — keep the login branding compact. */
+.login-logo img {
+  max-height: 84px !important;
+  width: auto !important;
+  max-width: 220px !important;
+}
+
+a {
+  color: #FF9D45;
+}
+a:hover {
+  color: #FFC24B;
+}
+
+.page-item.active .page-link {
+  background: linear-gradient(120deg, #FFC24B, #FF7A1A 45%, #E2260E) !important;
+  border-color: #FF7A1A !important;
+  color: #1A0D02 !important;
+}

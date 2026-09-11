@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Blog | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">Blog</span>
+    <h1 class="section-title">Stories &amp;<br><span class="gradient-text">Announcements</span></h1>
+    <p class="section-desc">Latest updates from the fest team.{% if total %} {{ total }} stor{{ total|pluralize:"y,ies" }} and counting.{% endif %} Log in to like and comment.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    {% if featured %}
+    <article class="post-featured" data-reveal>
+      {% if featured.cover_image_url %}
+      <a class="post-featured-cover" href="{{ featured.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+        <img loading="lazy" src="{{ featured.cover_image_url }}" alt="{{ featured.title }}">
+      </a>
+      {% endif %}
+      <div class="post-featured-body">
+        <span class="post-ribbon">Latest story</span>
+        <p class="blog-meta">{{ featured.published_at|date:"M j, Y" }} · {{ featured.reading_time_minutes }} min read</p>
+        <h2><a href="{{ featured.get_absolute_url }}">{{ featured.title }}</a></h2>
+        <p class="post-excerpt">{{ featured.excerpt|default:featured.content|truncatewords:36 }}</p>
+        <div class="post-foot">
+          <span class="post-author"><span class="review-ava" style="width:32px;height:32px;font-size:12px;">{{ featured.author.get_full_name|default:featured.author.username|slice:":2"|upper }}</span>{{ featured.author.get_full_name|default:featured.author.username }}</span>
+          <span class="blog-meta">♥ {{ featured.likes_count }} · 💬 {{ featured.comments_count }}</span>
+        </div>
+        <a href="{{ featured.get_absolute_url }}" class="btn btn-primary btn-sm" data-magnetic>Read Story</a>
+      </div>
+    </article>
+    {% endif %}
+
+    {% if posts %}
+    <div class="post-grid">
+      {% for post in posts %}
+      <article class="post-card" data-reveal>
+        {% if post.cover_image_url %}
+        <a class="post-card-cover" href="{{ post.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+          <img loading="lazy" src="{{ post.cover_image_url }}" alt="{{ post.title }}">
+        </a>
+        {% endif %}
+        <div class="post-card-body">
+          <p class="blog-meta">{{ post.published_at|date:"M j, Y" }} · {{ post.reading_time_minutes }} min read</p>
+          <h3><a href="{{ post.get_absolute_url }}" class="post-title-link">{{ post.title }}</a></h3>
+          <p class="post-excerpt">{{ post.excerpt|default:post.content|truncatewords:24 }}</p>
+          <div class="post-foot">
+            <span class="post-author"><span class="review-ava" style="width:28px;height:28px;font-size:11px;">{{ post.author.get_full_name|default:post.author.username|slice:":2"|upper }}</span>{{ post.author.get_full_name|default:post.author.username }}</span>
+            <span class="blog-meta">♥ {{ post.likes_count }} · 💬 {{ post.comments_count }}</span>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% elif not featured %}
+    <div class="comp-card" style="text-align:center;max-width:560px;margin:0 auto;">
+      <h3>No stories yet</h3>
+      <p class="comp-desc">Our first stories are on the way — check back soon.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

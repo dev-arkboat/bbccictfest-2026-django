@@ -1,0 +1,305 @@
+{% load static pwa %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+  /* Preloader shows on first visit + full reloads only — skipped on in-site navigation. */
+  (function () {
+    try {
+      var entries = (window.performance && performance.getEntriesByType)
+        ? performance.getEntriesByType('navigation') : [];
+      var navType = entries.length ? entries[0].type
+        : (performance.navigation ? (performance.navigation.type === 1 ? 'reload' : 'navigate') : 'navigate');
+      var seen = null;
+      try { seen = window.sessionStorage.getItem('bbcc-preloader-seen'); } catch (e) {}
+      if (seen && navType !== 'reload') {
+        document.documentElement.className += ' skip-preloader';
+      } else {
+        try { window.sessionStorage.setItem('bbcc-preloader-seen', '1'); } catch (e) {}
+      }
+    } catch (e) { /* never block rendering */ }
+  })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BBCC ICT Fest 2026 | Biggest ICT Festival in Tangail | Bindubasini Boys' Computer Club{% endblock %}</title>
+  {% block meta_description %}<meta name="description" content="{{ site.meta_description|default:"Tangail's biggest ICT festival — ICT Quiz, Science Project Showdown, Coding Competition, Chess & Rubik's Cube. September 19, 2026 at Bindubasini Boys' School. 1000+ participants, free & paid events. Register now!" }}">{% endblock %}
+  <meta name="keywords" content="ICT Fest 2026, Bindubasini Boys Computer Club, Tangail ICT Festival, ICT Quiz, Coding Competition, Science Project Showdown, Bangladesh tech event, school competition Tangail">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Bindubasini Boys' Computer Club">
+  <meta name="theme-color" content="#0A0908">
+  {% block canonical %}<link rel="canonical" href="https://bbccictfest.pro.bd{{ request.path }}">{% endblock %}
+  <link rel="icon" type="image/png" href="{% static 'img/logo.png' %}">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="BBCC ICT Fest 2026 Biggest ICT Festival in Tangail">
+  <meta property="og:description" content="The biggest ICT festival in Tangail — ICT Quiz, Science Project Showdown, Coding Competition, Chess & Rubik's Cube. September 19, 2026 at Bindubasini Boys' School. Register now!">
+  <meta property="og:url" content="https://bbccictfest.pro.bd/">
+  <meta property="og:image" content="https://bbccictfest.pro.bd/logo.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:site_name" content="BBCC ICT Fest 2026">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BBCC ICT Fest 2026 Biggest ICT Festival in Tangail">
+  <meta name="twitter:description" content="ICT Quiz, Science Project Showdown & Coding Competition. September 19, 2026 at Bindubasini Boys' School.">
+  <meta name="twitter:image" content="https://bbccictfest.pro.bd/logo.png">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "BBCC ICT Fest 2026",
+    "description": "The biggest ICT festival in Tangail district featuring ICT Quiz, Science Project Showdown, and Coding Competition.",
+    "startDate": "{{ site.event_date|date:'c'|default:'2026-09-19T09:00:00+06:00' }}",
+    "endDate": "{{ site_event_end|date:'c'|default:'2026-09-19T17:00:00+06:00' }}",
+    "location": {
+      "@type": "Place",
+      "name": "Bindubasini Boys' School",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Tangail",
+        "addressCountry": "BD"
+      }
+    },
+    "organizer": {
+      "@type": "Organization",
+      "name": "Bindubasini Boys' Computer Club",
+      "url": "https://bbccictfest.pro.bd/"
+    },
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode"
+  }
+  </script>
+
+  <!-- Organization + WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "Bindubasini Boys' Computer Club",
+        "alternateName": "BBCC",
+        "url": "https://bbccictfest.pro.bd/",
+        "logo": "https://bbccictfest.pro.bd/logo.png",
+        "description": "The computer club of Bindubasini Boys' School, Tangail, Bangladesh, organizing the annual BBCC ICT Fest.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Tangail",
+          "addressCountry": "BD"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "name": "BBCC ICT Fest 2026",
+        "url": "https://bbccictfest.pro.bd/",
+        "inLanguage": "en",
+        "publisher": {
+          "@type": "Organization",
+          "name": "Bindubasini Boys' Computer Club",
+          "url": "https://bbccictfest.pro.bd/"
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Who can participate?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Students from class 6-10 can participate. The ICT Quiz is open to all individuals. The Science Project Showdown requires school-based teams (2 students + 1 teacher). The Coding Competition is open to individual participants."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is there a registration fee?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "For the Quiz section the fee is 20 BDT, for the Coding Competition the fee is 49 BDT, and the other sections are free."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do the selection rounds work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "For the Science Project Showdown and Coding Competition, online screening rounds will be conducted. Top 10 teams (Science) and top 5 individuals (Coding) advance to fest day. The ICT Quiz is held live with no prior selection."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What do we bring for the Science Showdown?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Selected teams can bring a PowerPoint presentation or any presentation on a pen drive, a science project, or any means with which they can showcase their idea or project."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which programming languages are allowed?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Selected participants will be notified. Specific guidelines and problem formats will be shared with selected finalists before the fest."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How can my school register?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Schools register through the official form for the Science Project Showdown (2 students + 1 teacher). Students can register individually for other events. The registration link is available on the website and our Facebook page. Participants can also register via physical forms."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  {% block extra_css %}{% endblock %}
+
+  {% progressive_web_app_meta %}
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <div class="grain" aria-hidden="true"></div>
+  <div id="progressBar" aria-hidden="true"></div>
+  <div id="cursorGlow" aria-hidden="true"></div>
+
+  <!-- PRELOADER -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="pre-logo"><img src="{% static 'img/logo.png' %}" alt=""></div>
+    <div class="pre-text">booting ict fest 2026<span>...</span></div>
+    <div class="pre-bar"><div class="pre-bar-fill"></div></div>
+  </div>
+
+  {% block nav %}
+<nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
+    <div class="container nav-inner">
+      <a href="{% url 'core:home' %}#top" class="nav-logo">
+        <img src="{% static 'img/logo.png' %}" alt="Bindubasini Boys' Computer Club logo">
+        BBCC ICT Fest
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="{% url 'core:home' %}#about" class="nav-link">About</a></li>
+        <li><a href="{% url 'core:home' %}#competitions" class="nav-link">Events</a></li>
+        <li><a href="{% url 'core:home' %}#timeline" class="nav-link">Timeline</a></li>
+        <li><a href="{% url 'core:home' %}#guests" class="nav-link">Guests</a></li>
+        <li><a href="{% url 'core:home' %}#committee" class="nav-link">Committee</a></li>
+        <li><a href="{% url 'core:home' %}#campus-ambassador" class="nav-link">CA</a></li>
+        <li><a href="{% url 'core:home' %}#faq" class="nav-link">FAQ</a></li>
+        <li class="nav-games" id="navGames">
+          <a href="{% url 'core:arcade' %}" class="nav-link" aria-haspopup="true" aria-expanded="false">
+            Games
+            <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;"><path d="m6 9 6 6 6-6"/></svg>
+          </a>
+          <div class="nav-dropdown" role="menu">
+            {% for g in nav_games %}
+            <a href="{{ g.get_absolute_url }}" role="menuitem"><span class="bd" style="background:{{ g.accent_color }};"></span><span><b>{{ g.title }}</b><span>{{ g.difficulty }}</span></span></a>
+            {% endfor %}
+          </div>
+        </li>
+        <li><a href="{% url 'registrations:events' %}" class="btn btn-primary btn-sm">Register</a></li>
+              <li class="nav-games">{% if user.is_authenticated %}<a href="{% url 'accounts:profile' %}" class="nav-link">👤 {{ user.username }}</a>{% else %}<a href="{% url 'accounts:login' %}" class="nav-link">Login</a>{% endif %}</li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+  {% endblock nav %}
+
+  {% if messages %}
+  <div class="container"><div class="django-messages" style="padding-top: calc(var(--nav-h) + 18px);">{% for message in messages %}<div class="django-message {{ message.tags }}">{{ message }}</div>{% endfor %}</div></div>
+  {% endif %}
+
+  <main id="top">
+  {% block content %}{% endblock %}
+  </main>
+
+  {% block footer %}
+<footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="{% url 'core:home' %}#top" class="nav-logo">
+            <img src="{% static 'img/logo.png' %}" alt="Bindubasini Boys' Computer Club logo">
+            {{ site.site_name }}
+          </a>
+          <p class="footer-brand-text">{{ site.footer_about }}</p>
+        </div>
+        <div class="footer-col">
+          <h5>Quick Links</h5>
+          <a href="{% url 'core:home' %}#about">About</a>
+          <a href="{% url 'core:home' %}#competitions">Competitions</a>
+          <a href="{% url 'core:home' %}#timeline">Timeline</a>
+          <a href="{% url 'core:home' %}#guests">Guests</a>
+          <a href="{% url 'core:home' %}#committee">Committee</a>
+          <a href="{% url 'core:home' %}#campus-ambassador">Campus Ambassador</a>
+          <a href="{% url 'core:arcade' %}">Games</a></div>
+          <div class="footer-col">
+            <h5>More</h5>
+            <a href="{% url 'core:reviews' %}">Reviews</a>
+            <a href="{% url 'volunteers:list' %}">Volunteers</a>
+            <a href="{% url 'blog:list' %}">Blog</a>
+            <a href="{% url 'registrations:events' %}">Register</a>
+            <a href="{% url 'registrations:ca_apply' %}">Campus Ambassador</a>
+            <a href="{% url 'registrations:ca_list' %}">Ambassadors</a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <a href="#">Bindubasini Boys' School</a>
+          <a href="#">Tangail, Bangladesh</a>
+          <a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 <b>Bindubasini Boys' Computer Club</b>. All rights reserved.</p>
+        <div class="footer-social">
+          <a href="{{ site.facebook_url }}" target="_blank" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3V2z"/></svg>
+          </a>
+          <!-- <a href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <a href="#" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a> -->
+        </div>
+      </div>
+      <p class="footer-made"><a href="{{ site.made_by_url }}" style="color:var(--ember);text-decoration: none;" target="_blank" rel="noopener">Made by {{ site.made_by_name }}</a></p>
+    </div>
+  </footer>
+  {% endblock footer %}
+
+  <!-- BACK TO TOP -->
+  <button class="to-top" id="toTop" aria-label="Back to top">
+    <svg class="to-top-progress" viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+  </button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

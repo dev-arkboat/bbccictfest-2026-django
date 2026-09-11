@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Registration {{ registration.reference }} | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">{{ registration.event.name }}</span>
+    <h1 class="section-title">Reference<br><span class="gradient-text">{{ registration.reference }}</span></h1>
+    <p><span class="status-pill status-{{ registration.status }}">{{ registration.get_status_display }}</span></p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="form-wrap">
+      <div class="comp-card">
+        <dl class="kv">
+          <dt>Name</dt><dd>{{ registration.full_name }}</dd>
+          <dt>Email</dt><dd>{{ registration.email }}</dd>
+          <dt>Phone</dt><dd>{{ registration.phone }}</dd>
+          <dt>Institution</dt><dd>{{ registration.institution }}</dd>
+          <dt>Class</dt><dd>{{ registration.class_name }}</dd>
+          {% if registration.team_name %}<dt>Team</dt><dd>{{ registration.team_name }}</dd>{% endif %}
+          {% if registration.teammate_name %}<dt>Teammate</dt><dd>{{ registration.teammate_name }}</dd>{% endif %}
+          {% if registration.teacher_name %}<dt>Teacher</dt><dd>{{ registration.teacher_name }}</dd>{% endif %}
+          <dt>Amount</dt><dd>{% if registration.amount_bdt %}{{ registration.amount_bdt }} BDT{% else %}Free{% endif %}</dd>
+          {% if registration.bkash_trx_id %}<dt>bKash TrxID</dt><dd>{{ registration.bkash_trx_id }}</dd>{% endif %}
+          {% if registration.paid_at %}<dt>Paid at</dt><dd>{{ registration.paid_at|date:"M j, Y H:i" }}</dd>{% endif %}
+        </dl>
+        <div class="cta-actions" style="margin-top:24px;justify-content:flex-start;">
+          {% if not registration.is_paid and registration.amount_bdt %}
+          <a href="{% url 'registrations:pay' registration.pk %}" class="btn btn-primary btn-sm">Pay / Retry Payment</a>
+          <form method="post" action="{% url 'registrations:refresh' registration.pk %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn btn-outline btn-sm">Refresh Status</button></form>
+          {% endif %}
+          {% if is_guest_view %}
+          <a href="{% url 'registrations:lookup' %}" class="btn btn-outline btn-sm">Find Another Registration</a>
+          {% else %}
+          <a href="{% url 'registrations:my' %}" class="btn btn-outline btn-sm">My Registrations</a>
+          {% endif %}
+        </div>
+        {% if group_registrations|length > 1 %}
+        <h3 style="margin:26px 0 12px;font-size:15px;">Also in this checkout</h3>
+        <div class="table-wrap"><table class="fest-table">
+          <tr><th>Reference</th><th>Event</th><th>Status</th></tr>
+          {% for r in group_registrations %}
+          <tr><td>{{ r.reference }}</td><td>{{ r.event.name }}</td><td><span class="status-pill status-{{ r.status }}">{{ r.get_status_display }}</span></td></tr>
+          {% endfor %}
+        </table></div>
+        {% endif %}
+        {% if registration.payments.all %}
+        <h3 style="margin:26px 0 12px;font-size:15px;">Payment attempts</h3>
+        <div class="table-wrap"><table class="fest-table">
+          <tr><th>Payment ID</th><th>TrxID</th><th>Status</th><th>When</th></tr>
+          {% for p in registration.payments.all %}
+          <tr><td>{{ p.payment_id|truncatechars:18 }}</td><td>{{ p.trx_id|default:"—" }}</td><td>{{ p.get_status_display }}</td><td>{{ p.created_at|date:"M j H:i" }}</td></tr>
+          {% endfor %}
+        </table></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

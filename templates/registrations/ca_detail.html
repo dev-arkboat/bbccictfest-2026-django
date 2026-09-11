@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ ambassador.full_name }} — Campus Ambassador | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">Campus Ambassador</span>
+    <div class="member-photo" style="width:110px;height:110px;font-size:32px;margin:0 auto 18px;">{{ ambassador.full_name|cut:" "|slice:":2"|upper }}</div>
+    <h1 class="section-title">{{ ambassador.full_name }}</h1>
+    <p class="section-desc">{% if ambassador.school %}{{ ambassador.school.name }}{% else %}{{ ambassador.institution }}{% endif %}{% if ambassador.school and ambassador.institution and ambassador.institution != ambassador.school.name %} · {{ ambassador.institution }}{% endif %}</p>
+    <p class="section-desc">{% if rating_count %}<span class="stars">★★★★★</span> {{ rating_avg }}/5 from {{ rating_count }} rating{{ rating_count|pluralize }}{% else %}No ratings yet — be the first!{% endif %}</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="form-wrap">
+      <div class="comp-card" style="text-align:center;">
+        <h3>Scan to open this page</h3>
+        <p class="comp-desc">Point any camera at this QR code to return here.</p>
+        <img src="{% url 'registrations:ca_qr' ambassador.pk %}" alt="QR code for {{ ambassador.full_name }}" width="220" height="220" style="border-radius:12px;margin:14px auto;display:block;background:#fff;padding:8px;">
+        <div class="cta-actions" style="margin-top:8px;">
+          <a href="{% url 'registrations:ca_qr_download' ambassador.pk %}" class="btn btn-primary btn-sm" download>Download QR Code</a>
+          <a href="{% url 'registrations:ca_list' %}" class="btn btn-outline btn-sm">All Ambassadors</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="reviews-grid" style="margin-bottom:28px;">
+      {% for review in reviews %}
+      <div class="review-card" data-reveal>
+        <div class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+        <p>"{{ review.comment }}"</p>
+        <div class="review-who">
+          <div class="review-ava">{% if review.user.profile.avatar_url %}<img src="{{ review.user.profile.avatar_url }}" alt="{{ review.user.username }}">{% else %}{{ review.user.username|slice:":2"|upper }}{% endif %}</div>
+          <div><b>{{ review.user.get_full_name|default:review.user.username }}</b><span>{{ review.updated_at|date:"M j, Y" }}</span></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="form-wrap">
+      <div class="comp-card">
+        {% if user.is_authenticated %}
+        <h3 style="margin-bottom:14px;">{% if my_review %}Edit your rating{% else %}Leave a rating{% endif %}</h3>
+        <form method="post" action="{% url 'registrations:ca_review' ambassador.pk %}" class="form-grid">
+          {% csrf_token %}
+          {% if review_form.non_field_errors %}<ul class="form-errors">{% for e in review_form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          {% for field in review_form %}
+          <div class="form-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}<ul class="form-errors">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+          {% endfor %}
+          <div>
+            <button type="submit" class="btn btn-primary btn-sm" data-magnetic>Save Rating</button>
+            <a href="{% url 'registrations:ca_list' %}" class="btn btn-outline btn-sm">All Ambassadors</a>
+          </div>
+        </form>
+        {% if my_review %}
+        <form method="post" action="{% url 'registrations:ca_review_delete' ambassador.pk %}" style="margin-top:14px;" onsubmit="return confirm('Delete your rating?');">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline btn-sm">Delete my rating</button>
+        </form>
+        {% endif %}
+        {% else %}
+        <p class="comp-desc">Want to rate {{ ambassador.full_name }}? <a href="{% url 'accounts:login' %}?next={{ ambassador.get_absolute_url }}" style="color:var(--ember);">Login</a> to leave a 5-star rating and a comment.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

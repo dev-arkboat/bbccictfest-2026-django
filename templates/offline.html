@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Offline | BBCC ICT Fest 2026{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">Offline</span>
+    <h1 class="section-title">You're<br><span class="gradient-text">Offline</span></h1>
+    <p class="section-desc">Check your connection and try again.</p>
+    <div style="margin-top:24px;"><a href="{% url 'core:home' %}" class="btn btn-primary btn-sm">Retry</a></div>
+  </div>
+</section>
+{% endblock %}

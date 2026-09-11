@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}'s Profile | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <div class="review-ava" style="width:84px;height:84px;font-size:28px;margin:0 auto 18px;">{% if user.profile.avatar_url %}<img src="{{ user.profile.avatar_url }}" alt="{{ user.username }}">{% else %}{{ user.username|slice:":2"|upper }}{% endif %}</div>
+    <span class="section-tag">{{ user.profile.get_role_display }}</span>
+    <h1 class="section-title">{{ user.get_full_name|default:user.username }}</h1>
+    <p class="section-desc">@{{ user.username }}{% if user.profile.institution %} · {{ user.profile.institution }}{% endif %}</p>
+    {% if user.profile.bio %}<p class="section-desc" style="margin-top:10px;">{{ user.profile.bio }}</p>{% endif %}
+    <div class="cta-actions" style="margin-top:22px;">
+      <a href="{% url 'accounts:profile_edit' %}" class="btn btn-primary btn-sm">Edit Profile</a>
+      <a href="{% url 'accounts:public_profile' user.username %}" class="btn btn-outline btn-sm">Public View</a>
+      <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn btn-outline btn-sm">Logout</button></form>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="comp-grid">
+      <div class="comp-card">
+        <h3>Registrations ({{ registrations|length }})</h3>
+        {% for r in registrations %}
+        <div class="comp-detail"><span><a href="{% url 'registrations:detail' r.pk %}" style="color:var(--ember);">{{ r.reference }}</a> — {{ r.event.name }} · <span class="status-pill status-{{ r.status }}">{{ r.get_status_display }}</span></span></div>
+        {% empty %}
+        <p class="comp-desc">No registrations yet. <a href="{% url 'registrations:events' %}" style="color:var(--ember);">Browse events</a></p>
+        {% endfor %}
+      </div>
+      <div class="comp-card">
+        <h3>My Review</h3>
+        {% if review %}
+        <p class="comp-desc"><span class="stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</span></p>
+        <p class="comp-desc">"{{ review.comment|truncatewords:30 }}"</p>
+        <div style="margin-top:12px;"><a href="{% url 'core:review_write' %}" class="btn btn-outline btn-sm">Edit Review</a></div>
+        {% else %}
+        <p class="comp-desc">You haven't reviewed the fest yet.</p>
+        <div style="margin-top:12px;"><a href="{% url 'core:review_write' %}" class="btn btn-outline btn-sm">Write a Review</a></div>
+        {% endif %}
+      </div>
+      <div class="comp-card">
+        <h3>Campus Ambassador</h3>
+        {% for app in ca_applications %}
+        <div class="comp-detail"><span>{{ app.full_name }} · <span class="status-pill status-{{ app.status }}">{{ app.get_status_display }}</span></span></div>
+        {% if app.status == "approved" and app.school %}
+        <div style="margin-top:12px;"><a href="{% url 'registrations:ca_dashboard' %}" class="btn btn-outline btn-sm">Open School Dashboard ({{ app.school.name }})</a></div>
+        {% endif %}
+        {% empty %}
+        <p class="comp-desc">Not applied yet.</p>
+        <div style="margin-top:12px;"><a href="{% url 'registrations:ca_apply' %}" class="btn btn-outline btn-sm">Apply Now</a></div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if liked_posts or comments %}
+    <div class="comp-grid" style="margin-top:20px;">
+      <div class="comp-card">
+        <h3>Recently Liked</h3>
+        {% for like in liked_posts %}
+        <div class="comp-detail"><span><a href="{{ like.post.get_absolute_url }}" style="color:var(--ember);">{{ like.post.title }}</a></span></div>
+        {% empty %}<p class="comp-desc">Nothing liked yet.</p>{% endfor %}
+      </div>
+      <div class="comp-card">
+        <h3>Recent Comments</h3>
+        {% for c in comments %}
+        <div class="comp-detail"><span>"{{ c.body|truncatewords:12 }}" on <a href="{{ c.post.get_absolute_url }}" style="color:var(--ember);">{{ c.post.title }}</a></span></div>
+        {% empty %}<p class="comp-desc">No comments yet.</p>{% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Register: {{ event.name }} | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">{% if event.is_free %}Free Event{% else %}{{ event.fee_bdt }} BDT · bKash{% endif %}</span>
+    <h1 class="section-title">{{ event.name }}</h1>
+    {% if event.short_description %}<p class="section-desc">{{ event.short_description }}</p>{% endif %}
+    {% if event.rules %}<p class="section-desc" style="margin-top:10px;">{{ event.rules }}</p>{% endif %}
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="form-wrap">
+      {% if site.register_status %}
+      <div class="comp-card">
+        {% if existing and not existing.is_paid %}
+        <p class="section-desc" style="margin-bottom:18px;">Continue your pending registration <b>{{ existing.reference }}</b>.</p>
+        {% endif %}
+        <form method="post" class="form-grid">
+          {% csrf_token %}
+          {% if form.non_field_errors %}<ul class="form-errors">{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          {% for field in form %}
+          <div class="form-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.help_text %}<p class="blog-meta">{{ field.help_text }}</p>{% endif %}
+            {% if field.errors %}<ul class="form-errors">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+          {% endfor %}
+          <div>
+            <button type="submit" class="btn btn-primary" data-magnetic>{% if event.is_free %}Confirm Registration{% else %}Continue to bKash Payment{% endif %}</button>
+            <a href="{% url 'registrations:events' %}" class="btn btn-outline">Back</a>
+          </div>
+        </form>
+      </div>
+      {% else %}
+      {% include "registrations/_closed_notice.html" %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

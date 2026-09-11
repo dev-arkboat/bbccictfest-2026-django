@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">Account</span>
+    <h1 class="section-title">Edit<br><span class="gradient-text">Profile</span></h1>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="form-wrap">
+      <div class="comp-card">
+        <form method="post" class="form-grid">
+          {% csrf_token %}
+          {% if form.non_field_errors %}<ul class="form-errors">{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          {% for field in form %}
+          <div class="form-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.errors %}<ul class="form-errors">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+          </div>
+          {% endfor %}
+          <div>
+            <button type="submit" class="btn btn-primary" data-magnetic>Save Changes</button>
+            <a href="{% url 'accounts:profile' %}" class="btn btn-outline">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

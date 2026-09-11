@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Find My Registration | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <span class="section-tag">Registration</span>
+    <h1 class="section-title">Find My<br><span class="gradient-text">Registration</span></h1>
+    <p class="section-desc">Enter the registration number from your confirmation (e.g. BBCC26-00001) plus the phone number you registered with. No account needed.</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="form-wrap">
+      <div class="comp-card">
+        <form method="post" class="form-grid">
+          {% csrf_token %}
+          <div class="form-field">
+            <label for="id_reference">Registration number</label>
+            <input type="text" name="reference" id="id_reference" class="form-input" placeholder="BBCC26-00001" value="{{ request.POST.reference|default:'' }}" required autocomplete="off">
+          </div>
+          <div class="form-field">
+            <label for="id_phone">Phone number used at registration</label>
+            <input type="tel" name="phone" id="id_phone" class="form-input" placeholder="01XXXXXXXXX" required autocomplete="tel">
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary" data-magnetic>View Registration</button>
+            <a href="{% url 'registrations:events' %}" class="btn btn-outline">All Events</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
