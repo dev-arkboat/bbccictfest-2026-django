@@ -32,7 +32,7 @@ def profile(request):
     """Dedicated dashboard page for the logged-in user."""
     user = request.user
     registrations = (
-        Registration.objects.filter(user=user).select_related("event").order_by("-created_at")
+        Registration.objects.filter(user=user).prefetch_related("events").order_by("-created_at")
     )
     try:
         review = user.review

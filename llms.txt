@@ -6,7 +6,7 @@ BBCC ICT Fest 2026 is the biggest ICT (Information & Communication Technology) f
 - Date: September 19, 2026 (09:00–17:00, GMT+6)
 - Location: Bindubasini Boys' School, Tangail, Bangladesh
 - Expected attendance: 1000+ participants from 30+ schools
-- Registration: opening soon (some events free, ICT Quiz 19 BDT, Coding Competition 49 BDT)
+- Registration: offline only (paper forms at schools / venue help desk; some events free, ICT Quiz 19 BDT, Coding Competition 49 BDT)
 
 ## Competitions
 1. ICT Quiz — open to all individuals, on-the-spot registration
@@ -19,17 +19,19 @@ BBCC ICT Fest 2026 is the biggest ICT (Information & Communication Technology) f
 - Role: Represent your school/college, promote the fest, gather registrations
 - Perks: Certificate, crest, priority access, feature on website/socials, surprise awards for top CAs
 - Eligibility: Students class 6-12, any institution
-- Registration: Google Form — https://docs.google.com/forms/d/e/1FAIpQLSchcKKNp8awB4aq6P7Fq1kiJ7QE_7bXH5Z2hzMm97FSRkIXkQ/viewform (linked on homepage #campus-ambassador)
+- Note: Ambassadors are appointed by organizers; there is no public application form.
 
 ## BBCC Arcade
 A free browser game collection on the same site, including Snake, Tetris, 2048, Memory Match, Flappy Bird, Breakout, Pong, Minesweeper, Doom, Doom II, Wolfenstein 3D, Heretic, Quake, Commander Keen, and the Pokémon retro collection (Red, Blue, Yellow, Gold, Silver, Crystal, Ruby, Sapphire, Emerald, FireRed, LeafGreen).
 
 ## Links
 - Home: https://bbccictfest.pro.bd/
+- Registration info (offline only): https://bbccictfest.pro.bd/register/
 - Arcade: https://bbccictfest.pro.bd/games/
 - Organizer: Bindubasini Boys' Computer Club, Tangail, Bangladesh
 
 ## FAQ (short)
 - Who can join? Students in classes 6–10; Quiz is open to all individuals.
 - Registration fee? Quiz 19 BDT, Coding 49 BDT, others free.
+- How to register? Offline only — paper forms via schools / venue help desk.
 - Selection? Science Project and Coding have online screening rounds; Quiz is live.

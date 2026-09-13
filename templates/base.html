@@ -23,7 +23,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}BBCC ICT Fest 2026 | Biggest ICT Festival in Tangail | Bindubasini Boys' Computer Club{% endblock %}</title>
-  {% block meta_description %}<meta name="description" content="{{ site.meta_description|default:"Tangail's biggest ICT festival — ICT Quiz, Science Project Showdown, Coding Competition, Chess & Rubik's Cube. September 19, 2026 at Bindubasini Boys' School. 1000+ participants, free & paid events. Register now!" }}">{% endblock %}
+  {% block meta_description %}<meta name="description" content="{{ site.meta_description|default:"Tangail's biggest ICT festival — ICT Quiz, Science Project Showdown, Coding Competition, Chess & Rubik's Cube. September 19, 2026 at Bindubasini Boys' School. 1000+ participants. Registrations offline only!" }}">{% endblock %}
   <meta name="keywords" content="ICT Fest 2026, Bindubasini Boys Computer Club, Tangail ICT Festival, ICT Quiz, Coding Competition, Science Project Showdown, Bangladesh tech event, school competition Tangail">
   <meta name="robots" content="index, follow">
   <meta name="author" content="Bindubasini Boys' Computer Club">
@@ -34,7 +34,7 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="BBCC ICT Fest 2026 Biggest ICT Festival in Tangail">
-  <meta property="og:description" content="The biggest ICT festival in Tangail — ICT Quiz, Science Project Showdown, Coding Competition, Chess & Rubik's Cube. September 19, 2026 at Bindubasini Boys' School. Register now!">
+  <meta property="og:description" content="The biggest ICT festival in Tangail — ICT Quiz, Science Project Showdown, Coding Competition, Chess & Rubik's Cube. September 19, 2026 at Bindubasini Boys' School. Registrations offline only!">
   <meta property="og:url" content="https://bbccictfest.pro.bd/">
   <meta property="og:image" content="https://bbccictfest.pro.bd/logo.png">
   <meta property="og:image:width" content="512">
@@ -225,7 +225,7 @@
             {% endfor %}
           </div>
         </li>
-        <li><a href="{% url 'registrations:events' %}" class="btn btn-primary btn-sm">Register</a></li>
+        <li><a href="{% url 'registrations:events' %}" class="btn btn-outline btn-sm">Register</a></li>
               <li class="nav-games">{% if user.is_authenticated %}<a href="{% url 'accounts:profile' %}" class="nav-link">👤 {{ user.username }}</a>{% else %}<a href="{% url 'accounts:login' %}" class="nav-link">Login</a>{% endif %}</li>
       </ul>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
@@ -270,7 +270,7 @@
             <a href="{% url 'core:reviews' %}">Reviews</a>
             <a href="{% url 'volunteers:list' %}">Volunteers</a>
             <a href="{% url 'blog:list' %}">Blog</a>
-            <a href="{% url 'registrations:events' %}">Register</a>
+            <a href="{% url 'registrations:events' %}">Registrations (Offline)</a>
             <a href="{% url 'registrations:ca_list' %}">Ambassadors</a>
           </div>
         </div>

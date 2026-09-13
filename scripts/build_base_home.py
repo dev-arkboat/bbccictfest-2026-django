@@ -262,7 +262,7 @@ home = home.replace(
 )
 # hero kicker
 home = re.sub(r'(<div class="hero-label" data-hero-fade>\s*<span class="hero-label-dot"></span>\s*).*?(\s*</div>)',
-              r"\1{{ site.hero_kicker|default:'Registrations are Open' }}\2", home, flags=re.DOTALL)
+              r"\1{{ site.hero_kicker|default:'Registrations Offline' }}\2", home, flags=re.DOTALL)
 # hero title
 home = home.replace('<span class="line-inner" data-hero-line>ICT FEST</span>',
                     '<span class="line-inner" data-hero-line>{{ site.hero_title_line1|default:"ICT FEST" }}</span>')
@@ -491,12 +491,11 @@ cta = re.sub(r'<p class="cta-sub">.*?</p>', '<p class="cta-sub">{{ site.cta_subt
 cta_actions = re.search(r'<div class="cta-actions" data-reveal>.*?</div>\s*</div>', cta, flags=re.DOTALL)
 assert cta_actions
 new_actions = ("""<div class="cta-actions" data-reveal>
-          {% for event in events|slice:":3" %}
-          <a href="{{ event.get_absolute_url }}" class="btn {% if forloop.counter == 1 %}btn-primary{% elif forloop.counter == 2 %}btn-primary btn-gold{% else %}btn-outline{% endif %}" data-magnetic>
-            Register for {{ event.name }}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
-          {% endfor %}
+          <div class="comp-card" style="text-align:center;max-width:560px;margin:0 auto;">
+            <p><span class="status-pill status-pending">Registrations offline only</span></p>
+            <p class="comp-desc" style="margin-top:12px;">Sign up on paper at your school or at the venue help desk. Online registration is closed.</p>
+            <div style="margin-top:16px;"><a href="{% url 'registrations:events' %}" class="btn btn-outline" data-magnetic>Registration Info</a></div>
+          </div>
         </div>""")
 cta = cta[:cta_actions.start()] + new_actions + cta[cta_actions.end():]
 home = home[:cta_m.start()] + cta + home[cta_m.end():]

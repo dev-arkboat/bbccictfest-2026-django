@@ -23,7 +23,7 @@ class SiteSetting(models.Model):
     site_name = models.CharField(max_length=120, default="BBCC ICT Fest 2026")
     org_name = models.CharField(max_length=160, default="Bindubasini Boys' Computer Club")
     tagline = models.CharField(max_length=200, default="Biggest ICT Festival in Tangail")
-    hero_kicker = models.CharField(max_length=120, default="Registrations are Open")
+    hero_kicker = models.CharField(max_length=120, default="Registrations Offline")
     hero_title_line1 = models.CharField(max_length=120, default="ICT FEST")
     hero_title_line2 = models.CharField(max_length=120, default="2026")
     hero_subtitle = models.TextField(
@@ -46,13 +46,12 @@ class SiteSetting(models.Model):
     meta_description = models.TextField(
         default="Tangail's biggest ICT festival — ICT Quiz, Science Project "
         "Showdown, Coding Competition, Chess & Rubik's Cube. September 19, 2026 "
-        "at Bindubasini Boys' School. Register now!"
+        "at Bindubasini Boys' School. Registrations offline only!"
     )
     og_image_url = models.URLField(
         "Social share image URL", max_length=500,
         default="https://bbccictfest.pro.bd/logo.png",
     )
-    register_status = models.BooleanField("Registration open", default=True)
     about_heading_a = models.CharField(
         max_length=200, default="The Biggest ICT Event"
     )
@@ -74,8 +73,8 @@ class SiteSetting(models.Model):
     cta_title_a = models.CharField(max_length=200, default="Ready to Be Part of")
     cta_title_b = models.CharField(max_length=200, default="The Biggest ICT Fest?")
     cta_subtitle = models.TextField(
-        default="Registrations are open. Secure your spot at Tangail's biggest "
-        "technology celebration!"
+        default="Registrations are offline only. Sign up on paper at your school "
+        "or at the venue help desk!"
     )
     ca_heading = models.CharField(max_length=200, default="Become a Campus Ambassador")
     ca_description = models.TextField(

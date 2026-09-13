@@ -23,10 +23,11 @@
     <div class="comp-grid">
       <div class="comp-card">
         <h3>Registrations ({{ registrations|length }})</h3>
+        <p class="comp-desc" style="margin-bottom:12px;">Registrations are offline only — entries below were added by organizers from paper forms.</p>
         {% for r in registrations %}
-        <div class="comp-detail"><span><a href="{% url 'registrations:detail' r.pk %}" style="color:var(--ember);">{{ r.reference }}</a> — {{ r.event.name }} · <span class="status-pill status-{{ r.status }}">{{ r.get_status_display }}</span></span></div>
+        <div class="comp-detail"><span><b>{{ r.reference }}</b> (Serial {{ r.serial_number }}) — {{ r.segment_names }} · <span class="status-pill status-{{ r.status }}">{{ r.get_status_display }}</span></span></div>
         {% empty %}
-        <p class="comp-desc">No registrations yet. <a href="{% url 'registrations:events' %}" style="color:var(--ember);">Browse events</a></p>
+        <p class="comp-desc">No registrations yet.</p>
         {% endfor %}
       </div>
       <div class="comp-card">

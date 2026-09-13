@@ -7,8 +7,10 @@
   <div class="container">
     <span class="section-tag">Organizers</span>
     <h1 class="section-title">Registrations<br><span class="gradient-text">Board</span></h1>
+    <p class="section-desc">Offline entries added from the admin panel. To add or edit a registration, use the admin.</p>
     <div style="margin-top:20px;">
-      <a href="{% url 'registrations:ca_create' %}" class="btn btn-primary btn-sm">Create Campus Ambassador</a>
+      <a href="/admin/registrations/registration/add/" class="btn btn-primary btn-sm">Add Registration</a>
+      <a href="{% url 'registrations:ca_create' %}" class="btn btn-outline btn-sm">Create Campus Ambassador</a>
       <a href="{% url 'registrations:ca_list' %}" class="btn btn-outline btn-sm">View Ambassadors</a>
     </div>
   </div>
@@ -17,19 +19,20 @@
 <section class="section" style="padding-top:0;">
   <div class="container">
     <div class="table-wrap"><table class="fest-table">
-      <tr><th>Reference</th><th>Name</th><th>Event</th><th>Phone</th><th>Amount</th><th>Status</th><th></th></tr>
+      <tr><th>Serial</th><th>Reference</th><th>Name</th><th>Segments</th><th>School</th><th>Phone</th><th>Amount</th><th>Status</th></tr>
       {% for r in registrations %}
       <tr>
+        <td><b>{{ r.serial_number }}</b></td>
         <td>{{ r.reference }}</td>
         <td>{{ r.full_name }}</td>
-        <td>{{ r.event.name }}</td>
+        <td>{{ r.segment_names }}</td>
+        <td>{{ r.school.name }}</td>
         <td>{{ r.phone }}</td>
         <td>{% if r.amount_bdt %}{{ r.amount_bdt }}{% else %}Free{% endif %}</td>
         <td><span class="status-pill status-{{ r.status }}">{{ r.get_status_display }}</span></td>
-        <td><a href="{% url 'registrations:detail' r.pk %}">Open</a></td>
       </tr>
       {% empty %}
-      <tr><td colspan="7">No registrations yet.</td></tr>
+      <tr><td colspan="8">No registrations yet.</td></tr>
       {% endfor %}
     </table></div>
   </div>

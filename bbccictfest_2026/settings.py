@@ -188,22 +188,6 @@ EMAIL_BACKEND = os.getenv(
 )
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@bbccictfest.pro.bd")
 
-# ---------------------------------------------------------------- bKash (pybkash)
-# Follows https://github.com/Itsmmdoha/pybkash + the dev.to tutorial:
-# Token(username, password, app_key, app_secret, sandbox=...) then
-# Client(token).create_payment(...) -> redirect bkash_url ->
-# callback?paymentID=...&status=... -> execute_payment(payment_id).
-BKASH_USERNAME = os.getenv("BKASH_USERNAME", "")
-BKASH_PASSWORD = os.getenv("BKASH_PASSWORD", "")
-BKASH_APP_KEY = os.getenv("BKASH_APP_KEY", "")
-BKASH_APP_SECRET = os.getenv("BKASH_APP_SECRET", "")
-BKASH_SANDBOX = env_bool("BKASH_SANDBOX", True)
-BKASH_CALLBACK_BASE = os.getenv("BKASH_CALLBACK_BASE", SITE_URL).rstrip("/")
-BKASH_ENABLED = bool(BKASH_USERNAME and BKASH_PASSWORD and BKASH_APP_KEY and BKASH_APP_SECRET)
-# When credentials are absent (local dev) we run in MOCK mode so the full
-# registration flow can be tested end-to-end without hitting bKash.
-BKASH_MOCK = env_bool("BKASH_MOCK", not BKASH_ENABLED)
-
 # ---------------------------------------------------------------- Jazzmin (ember theme, matches site design)
 JAZZMIN_SETTINGS = {
     "site_title": "BBCC ICT Fest Admin",
@@ -234,7 +218,6 @@ JAZZMIN_SETTINGS = {
         "core.Game": "fas fa-gamepad",
         "registrations.Event": "fas fa-ticket-alt",
         "registrations.Registration": "fas fa-clipboard-list",
-        "registrations.PaymentTransaction": "fas fa-money-bill-wave",
         "schools.School": "fas fa-school",
         "volunteers.Volunteer": "fas fa-hands-helping",
         "blog.Post": "fas fa-blog",
@@ -322,7 +305,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "handlers": {"console": {"class": "logging.StreamHandler"}},
     "loggers": {
-        "registrations.bkash": {"handlers": ["console"], "level": "INFO"},
+        "registrations": {"handlers": ["console"], "level": "INFO"},
         "django.request": {"handlers": ["console"], "level": "WARNING"},
     },
 }

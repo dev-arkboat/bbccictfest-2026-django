@@ -1,72 +1,41 @@
 {% extends "base.html" %}
 
-{% block title %}Register — Pick Your Segments | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
+{% block title %}Registrations — Offline Only | {{ site.site_name|default:"BBCC ICT Fest 2026" }}{% endblock %}
 
 {% block content %}
 <section class="page-hero">
   <div class="container">
-    <span class="section-tag">Register</span>
-    <h1 class="section-title">One Form,<br><span class="gradient-text">Every Segment</span></h1>
-    <p class="section-desc">Fill in your details once, tick every segment you want, see the total live — then pay once with bKash. Free events confirm instantly. No account needed, but logged-in users get a personal dashboard.</p>
-    <div style="margin-top:20px;">
-      {% if user.is_authenticated %}
-      <a href="{% url 'registrations:my' %}" class="btn btn-outline btn-sm">My Registrations</a>
-      {% endif %}
-      <a href="{% url 'registrations:lookup' %}" class="btn btn-outline btn-sm">Find My Registration</a>
-    </div>
+    <span class="section-tag">Registrations</span>
+    <h1 class="section-title">Registrations Are<br><span class="gradient-text">Offline Only</span></h1>
+    <p class="section-desc">There is no online registration this year. Sign up on paper at your school or at the venue on fest day — our team will enter your serial number, segments and payment status from the admin panel.</p>
   </div>
 </section>
 
 <section class="section" id="register-form" style="padding-top:0;">
   <div class="container">
-    {% if site.register_status %}
-    <form method="post" class="form-grid" id="multi-register-form" style="gap:28px;">
-      {% csrf_token %}
-      {% if form.non_field_errors %}<ul class="form-errors">{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+    <div class="comp-card" style="text-align:center;">
+      <p><span class="status-pill status-pending">Registrations offline only</span></p>
+      <p class="comp-desc" style="margin-top:12px;">Visit the help desk at {{ site.venue_name|default:"Bindubasini Boys' School, Tangail" }} or contact your Campus Ambassador. Already registered on paper? Keep your serial number safe for entry-day verification.</p>
+      <div style="margin-top:20px;">
+        <a href="{% url 'registrations:ca_list' %}" class="btn btn-outline btn-sm">Meet Our Ambassadors</a>
+      </div>
+    </div>
 
-      <div class="comp-card">
-        <h3>Your details</h3>
-        <div class="form-grid" style="margin-top:16px;">
-          {% for field in form %}
-          {% if field.name != "events" %}
-          <div class="form-field">
-            {{ field.label_tag }}
-            {{ field }}
-            {% if field.help_text %}<p class="blog-meta">{{ field.help_text }}</p>{% endif %}
-            {% if field.errors %}<ul class="form-errors">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
-          </div>
-          {% endif %}
-          {% endfor %}
+    <div class="committee-subhead" data-reveal>Segments &amp; fees (for reference)</div>
+    <div class="comp-grid">
+      {% for e in events %}
+      <div class="comp-card" data-reveal>
+        <h3 style="margin-top:0;">{{ e.name }}</h3>
+        <p class="comp-desc">{{ e.short_description|default:e.rules|truncatewords:24 }}</p>
+        <div class="comp-tags">
+          <span class="comp-tag{% if not e.is_free %} comp-tag-highlight{% endif %}">{% if e.is_free %}Free{% else %}{{ e.fee_bdt }} BDT{% endif %}</span>
+          {% if e.is_team_event %}<span class="comp-tag">Team Event</span>{% endif %}
         </div>
       </div>
-
-      <div>
-        <div class="committee-subhead" data-reveal>Pick your segments</div>
-        {% if form.events.errors %}<ul class="form-errors">{% for e in form.events.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
-        <div class="comp-grid">
-          {% for s in segments %}
-          <label class="comp-card segment-card" data-reveal style="cursor:pointer;">
-            <input type="checkbox" name="events" value="{{ s.event.pk }}" data-fee="{{ s.event.fee_bdt }}"{% if s.checked %} checked{% endif %} style="width:20px;height:20px;accent-color:var(--ember);">
-            <h3 style="margin-top:12px;">{{ s.event.name }}</h3>
-            <p class="comp-desc">{{ s.event.short_description|default:s.event.rules|truncatewords:24 }}</p>
-            <div class="comp-tags">
-              <span class="comp-tag{% if not s.event.is_free %} comp-tag-highlight{% endif %}">{% if s.event.is_free %}Free{% else %}{{ s.event.fee_bdt }} BDT{% endif %}</span>
-              {% if s.event.is_team_event %}<span class="comp-tag">Team Event</span>{% endif %}
-            </div>
-          </label>
-          {% endfor %}
-        </div>
-      </div>
-
-      <div class="comp-card" style="text-align:center;">
-        <p class="section-desc"><span id="segment-count">0</span> segment(s) selected</p>
-        <p class="section-title" style="font-size:clamp(28px,4vw,40px);margin:8px 0 20px;">Total: <span class="gradient-text"><span id="fee-total">0</span> BDT</span></p>
-        <button type="submit" class="btn btn-primary" data-magnetic>Register & Continue</button>
-      </div>
-    </form>
-    {% else %}
-    {% include "registrations/_closed_notice.html" %}
-    {% endif %}
+      {% empty %}
+      <div class="comp-card"><p class="comp-desc">Segment list coming soon.</p></div>
+      {% endfor %}
+    </div>
 
     <div style="text-align:center;margin-top:40px;" data-reveal>
       <p class="section-desc" style="margin-bottom:16px;">Looking for your school's representative?</p>
@@ -74,27 +43,4 @@
     </div>
   </div>
 </section>
-
-<script>
-(function () {
-  var form = document.getElementById('multi-register-form');
-  if (!form) return;
-  var boxes = form.querySelectorAll('input[name="events"]');
-  var totalEl = document.getElementById('fee-total');
-  var countEl = document.getElementById('segment-count');
-  function refresh() {
-    var total = 0, count = 0;
-    boxes.forEach(function (b) {
-      if (b.checked) {
-        count += 1;
-        total += parseInt(b.dataset.fee || "0", 10) || 0;
-      }
-    });
-    totalEl.textContent = total;
-    countEl.textContent = count;
-  }
-  boxes.forEach(function (b) { b.addEventListener('change', refresh); });
-  refresh();
-})();
-</script>
 {% endblock %}

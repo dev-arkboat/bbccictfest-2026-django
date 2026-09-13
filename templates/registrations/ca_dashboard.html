@@ -21,9 +21,9 @@
             <input type="search" name="q" id="id_q" class="form-input" placeholder="Name, phone, email, class, reference…" value="{{ q }}" autocomplete="off">
           </div>
           <div class="form-field">
-            <label for="id_event">Event</label>
+            <label for="id_event">Segment</label>
             <select name="event" id="id_event" class="form-input">
-              <option value="">All events</option>
+              <option value="">All segments</option>
               {% for e in events %}<option value="{{ e.pk }}"{% if event_id == e.pk|stringformat:"s" %} selected{% endif %}>{{ e.name }}</option>{% endfor %}
             </select>
           </div>
@@ -35,12 +35,13 @@
     <div class="committee-subhead" data-reveal>Participants</div>
     {% if participants %}
     <div class="table-wrap"><table class="fest-table">
-      <tr><th>Reference</th><th>Name</th><th>Event</th><th>Class</th><th>Phone</th><th>Status</th></tr>
+      <tr><th>Serial</th><th>Reference</th><th>Name</th><th>Segments</th><th>Class</th><th>Phone</th><th>Status</th></tr>
       {% for p in participants %}
       <tr>
-        <td><b>{{ p.reference }}</b></td>
+        <td><b>{{ p.serial_number }}</b></td>
+        <td>{{ p.reference }}</td>
         <td>{{ p.full_name }}<br><span class="blog-meta">{{ p.email }}</span></td>
-        <td>{{ p.event.name }}</td>
+        <td>{{ p.segment_names }}</td>
         <td>{{ p.get_class_name_display }}</td>
         <td>{{ p.phone }}</td>
         <td><span class="status-pill status-{{ p.status }}">{{ p.get_status_display }}</span></td>

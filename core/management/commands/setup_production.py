@@ -60,7 +60,4 @@ class Command(BaseCommand):
                 f"Admin user '{username}': {'created' if created else 'password reset'}."
             )
         )
-        self.stdout.write(
-            "Next: collectstatic, point DNS at this server, and set the bKash "
-            "callback URL to <domain>/register/pay/callback/."
-        )
+        self.stdout.write("Next: collectstatic and point DNS at this server.")

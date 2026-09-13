@@ -21,9 +21,9 @@
         </div>
         <div class="form-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
           <div class="form-field">
-            <label for="id_event">Event</label>
+            <label for="id_event">Segment</label>
             <select name="event" id="id_event" class="form-input">
-              <option value="">All events</option>
+              <option value="">All segments</option>
               {% for e in events %}<option value="{{ e.pk }}"{% if f.event == e.pk|stringformat:"s" %} selected{% endif %}>{{ e.name }}</option>{% endfor %}
             </select>
           </div>
@@ -59,16 +59,17 @@
 
     <p class="blog-meta" style="margin-bottom:12px;">{{ total }} registration{{ total|pluralize }} found</p>
     <div class="table-wrap"><table class="fest-table">
-      <tr><th>Reference</th><th>Serial</th><th>Name</th><th>Phone</th><th>Event</th><th>School</th><th>Class</th><th>Status</th><th>Entry</th></tr>
+      <tr><th>Reference</th><th>Serial</th><th>Name</th><th>Phone</th><th>Segments</th><th>School</th><th>Class</th><th>Amount</th><th>Status</th><th>Entry</th></tr>
       {% for r in page %}
       <tr>
         <td><b>{{ r.reference }}</b></td>
-        <td>{{ r.serial_number|default:"—" }}</td>
+        <td>{{ r.serial_number }}</td>
         <td>{{ r.full_name }}<br><span class="blog-meta">{{ r.email }}</span></td>
         <td>{{ r.phone }}</td>
-        <td>{{ r.event.name }}</td>
-        <td>{% if r.school %}{{ r.school.name }}{% else %}{{ r.institution }}{% endif %}</td>
+        <td>{{ r.segment_names }}</td>
+        <td>{{ r.school.name }}</td>
         <td>{{ r.get_class_name_display }}</td>
+        <td>{% if r.amount_bdt %}{{ r.amount_bdt }} BDT{% else %}Free{% endif %}</td>
         <td><span class="status-pill status-{{ r.status }}">{{ r.get_status_display }}</span></td>
         <td>
           {% if r.checked_in %}
@@ -82,7 +83,7 @@
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="9">No registrations match. Try a different search.</td></tr>
+      <tr><td colspan="10">No registrations match. Try a different search.</td></tr>
       {% endfor %}
     </table></div>
 

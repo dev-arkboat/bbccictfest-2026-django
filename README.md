@@ -3,11 +3,11 @@
 The official website for **BBCC ICT Fest 2026** — the biggest ICT festival in the
 Tangail district, organized by the Bindubasini Boys' Computer Club.
 
-What started as a static site is now a full Django web app: students can register
-and pay with bKash, schools manage their teams through Campus Ambassadors,
-volunteers get their own QR-coded profile pages, and visitors can read the blog,
-play arcade games, and leave reviews. Organizers run all of it from a themed
-admin panel — no code changes needed.
+What started as a static site is now a full Django web app: registrations are
+offline-only (paper forms entered from the admin panel), schools manage their
+teams through Campus Ambassadors, volunteers get their own QR-coded profile
+pages, and visitors can read the blog, play arcade games, and leave reviews.
+Organizers run all of it from a themed admin panel — no code changes needed.
 
 🌐 **Live site:** https://bbccictfest.pro.bd
 
@@ -25,15 +25,20 @@ admin panel — no code changes needed.
 - Kill time in the [BBCC Arcade](https://bbccictfest.pro.bd/games/) — 15 playable browser games
 
 **If you're participating**
-- [Create an account](https://bbccictfest.pro.bd/accounts/signup/) and [register for events](https://bbccictfest.pro.bd/register/) —
-  free events confirm instantly, paid ones check out securely with bKash
-- Track everything from [your dashboard](https://bbccictfest.pro.bd/accounts/me/): registrations, payments,
-  liked posts, and your review — plus a public profile page to share
+- Registrations are **offline only** — sign up on paper at your school or at the
+  venue help desk. The [registration page](https://bbccictfest.pro.bd/register/)
+  lists the segments and fees for reference.
+- [Create an account](https://bbccictfest.pro.bd/accounts/signup/) to write reviews,
+  rate volunteers/ambassadors, and follow the blog — no online signup needed.
+- Track everything from [your dashboard](https://bbccictfest.pro.bd/accounts/me/):
+  your offline registrations (added by organizers), liked posts, and your review —
+  plus a public profile page to share
 - Leave a 5-star [review](https://bbccictfest.pro.bd/reviews/) of the fest (one per person — you can edit it anytime),
   and rate individual volunteers and ambassadors right on their pages
 
 **If you're organizing**
-- Run the whole fest from `/admin/`: events and fees, registrations, payments,
+- Run the whole fest from `/admin/`: events and fees, offline registrations
+  (serial number, segments, auto-calculated amount, payment status),
   schools, volunteers, ambassadors, blog posts, reviews, and every line of
   homepage text
 - Give organizers the `Organizer` group and volunteers the `Volunteer` group —
@@ -79,7 +84,7 @@ Open http://127.0.0.1:8000/ — and http://127.0.0.1:8000/admin/ for the control
 | App | What it owns |
 | --- | --- |
 | `core` | Homepage CMS (hero, ticker, stats, competitions, timeline, guests, committee, sponsors, FAQ), reviews, arcade game catalog |
-| `registrations` | Events, registrations, bKash payment ledger, Campus Ambassadors |
+| `registrations` | Events (segments), offline registrations, Campus Ambassadors |
 | `schools` | School directory — every CA belongs to one, volunteers group under theirs |
 | `volunteers` | Volunteer profiles, public pages, QR codes |
 | `blog` | Posts, comments, likes |
@@ -91,45 +96,21 @@ the design stays consistent everywhere.
 
 ---
 
-## Payments with bKash (the important part 💸)
+## Offline registrations 📝
 
-We use [`pybkash`](https://github.com/Itsmmdoha/pybkash) for tokenized checkout.
-The flow is deliberately paranoid, in this order:
+There is no online signup and no payment gateway. Participants fill paper
+forms at their school or the venue help desk. Organizers then enter each row
+from `/admin/` → Registrations:
 
-1. `create_payment` → redirect the student to their `bkash_url`
-2. bKash sends them back to `/register/pay/callback/?paymentID=…&status=…`
-3. The callback parameters are treated as a **hint only** — never trusted
-4. The server calls `execute_payment`, then double-checks with `query_payment`
-5. The paid amount is compared against the registration amount before anything
-   is marked paid
+1. Type the paper **serial number** (required, unique integer).
+2. Fill name, phone, school, class.
+3. Tick one or more **segments** (events).
+4. Leave **amount** at `0` to auto-calculate the summed segment fees, or type
+   a value to override it manually.
+5. Set the **payment status**: Pending / Paid / Confirmed / Cancelled.
 
-Every step lands in an append-only `PaymentTransaction` row, so any payment can
-be audited, retried, or reconciled from the admin later. Callbacks are
-idempotent — a double-hit just re-verifies.
-
-**Try it locally without credentials:**
-
-```env
-BKASH_MOCK=True
-```
-
-Mock mode simulates the entire flow end-to-end. For real money, fill in your
-merchant credentials and flip it off:
-
-```env
-BKASH_USERNAME=...
-BKASH_PASSWORD=...
-BKASH_APP_KEY=...
-BKASH_APP_SECRET=...
-BKASH_SANDBOX=True      # False in production
-BKASH_MOCK=False
-BKASH_CALLBACK_BASE=https://bbccictfest.pro.bd
-```
-
-Background reading: the
-[pybkash repo](https://github.com/Itsmmdoha/pybkash),
-[PyPI page](https://pypi.org/project/pybkash/), and this
-[integration walkthrough](https://dev.to/itsmmdoha/how-to-integrate-bkash-payment-gateway-in-python-the-easy-way-1997).
+Fest-day staff use `/register/verify/` to search by serial, reference
+(`BBCC26-00001`), phone, name, school or class and tick check-in at the gate.
 
 ---
 
@@ -165,19 +146,18 @@ in [`.env.example`](.env.example):
 | `SITE_URL` | Canonical URL — used for sitemap, emails, QR codes |
 | `DATABASE_URL` | Empty = local SQLite file. Set `postgres://USER:PASSWORD@HOST:5432/DBNAME` for Postgres (parsed by `dj-database-url`, persistent + health-checked connections) |
 | `DJANGO_TIME_ZONE` | Fest timezone (`Asia/Dhaka`) |
-| `BKASH_*` | Payment credentials (see above) |
 
 ---
 
 ## Testing & quality
 
 ```powershell
-uv run python manage.py test   # 37 tests: payments (mock), QR, roles, event + person reviews, blog, sitemap…
+uv run python manage.py test   # offline registrations, QR, roles, reviews, blog, sitemap…
 uv run python manage.py check  # Django system checks
 ```
 
-`seed_site` is idempotent — run it any time to (re)create starter content and
-auto-link schools from institutions already on file. It never touches user data.
+`seed_site` is idempotent — run it any time to (re)create starter content.
+It never touches user data.
 
 ---
 
@@ -187,9 +167,6 @@ auto-link schools from institutions already on file. It never touches user data.
 - [ ] Real `SITE_URL` (+ `ALLOWED_HOSTS` if you serve extra domains)
 - [ ] `DATABASE_URL` pointing at Postgres (SQLite is dev-only)
 - [ ] `EMAIL_HOST` + credentials so the site can actually send mail
-- [ ] `BKASH_MOCK=False`, `BKASH_SANDBOX=False`, production callback base URL —
-      and the same callback URL whitelisted in your bKash merchant dashboard:
-      `https://YOUR-DOMAIN/register/pay/callback/`
 - [ ] `uv run python manage.py collectstatic` (WhiteNoise serves `/static/`)
 - [ ] No default passwords left anywhere
 - [ ] `sitemap.xml` / `robots.txt` resolve on your domain
@@ -225,10 +202,10 @@ host to `ALLOWED_HOSTS` temporarily.
 Each shell session cleans up its child jobs. Run the server in a foreground
 terminal (or a process manager) instead of a background job.
 
-**Payments stuck at "pending"?**
-Open the registration in admin and inspect its `PaymentTransaction` rows —
-the raw gateway payloads will tell you exactly which step failed, and the
-"Refresh status" button re-queries bKash.
+**Amount looks wrong on a registration?**
+Open the row in admin — the total auto-calculates from the ticked segments
+when the amount is left at `0`. Type any other value to keep a manual
+override.
 
 **QR codes look broken?**
 They're generated on the fly with `qrcode` + Pillow (both in

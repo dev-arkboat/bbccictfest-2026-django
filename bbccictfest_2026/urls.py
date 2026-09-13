@@ -6,7 +6,6 @@ from bbccictfest_2026.sitemaps import (
     AmbassadorSitemap,
     ArcadeSitemap,
     BlogSitemap,
-    EventSitemap,
     StaticSitemap,
     VolunteerSitemap,
 )
@@ -14,7 +13,6 @@ from bbccictfest_2026.sitemaps import (
 sitemaps = {
     "static": StaticSitemap,
     "arcade": ArcadeSitemap,
-    "events": EventSitemap,
     "blog": BlogSitemap,
     "volunteers": VolunteerSitemap,
     "ambassadors": AmbassadorSitemap,

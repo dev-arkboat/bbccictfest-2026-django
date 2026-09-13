@@ -44,7 +44,7 @@ class Command(BaseCommand):
             TickerItem,
             TimelineStep,
         )
-        from registrations.models import Event, Registration
+        from registrations.models import Event
 
         with transaction.atomic():
             SiteSetting.get_solo()
@@ -207,18 +207,8 @@ class Command(BaseCommand):
                 Event.objects.update_or_create(slug=ev["slug"], defaults={**ev, "is_active": True})
             self.stdout.write(f"events={len(events)}")
 
-            # Schools from every distinct institution already on file.
             from schools.models import School
 
-            institutions = {
-                name.strip()
-                for name in Registration.objects.values_list("institution", flat=True)
-                if name and name.strip()
-            }
-            for i, name in enumerate(sorted(institutions)):
-                School.objects.get_or_create(
-                    name=name[:200], defaults={"order": i}
-                )
             self.stdout.write(f"schools={School.objects.count()}")
 
             User = get_user_model()
@@ -227,13 +217,14 @@ class Command(BaseCommand):
                 Post.objects.create(
                     title="Welcome to BBCC ICT Fest 2026",
                     slug="welcome-to-bbcc-ict-fest-2026",
-                    excerpt="Registrations are open — quiz, science showdown, coding, chess and Rubik's cube.",
+                    excerpt="Registrations are offline only — quiz, science showdown, coding, chess and Rubik's cube.",
                     content=(
                         "Bindubasini Boys' Computer Club proudly presents the biggest ICT festival "
                         "in the history of Tangail district.\n\nFive competitions, distinguished guests, "
                         "school exhibitions and a full day of innovation await you on September 19, 2026 "
-                        "at Bindubasini Boys' School.\n\nRegister for your event, pay securely with bKash, "
-                        "and take a break at the BBCC Arcade between competitions. See you there!"
+                        "at Bindubasini Boys' School.\n\nRegistrations are offline only this year — "
+                        "contact the organizers or visit the venue to sign up. "
+                        "Take a break at the BBCC Arcade between competitions. See you there!"
                     ),
                     author=author,
                     status=Post.STATUS_PUBLISHED,

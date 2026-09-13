@@ -31,7 +31,6 @@ class SiteSettingAdmin(admin.ModelAdmin):
         ("Campus Ambassador", {"fields": ("ca_heading", "ca_description")}),
         ("Contact & Footer", {"fields": ("contact_email", "facebook_url", "footer_about", "made_by_name", "made_by_url")}),
         ("SEO / Social", {"fields": ("meta_description", "og_image_url")}),
-        ("Switches", {"fields": ("register_status",)}),
         ("Meta", {"fields": ("committee_note",)}),
     )
 

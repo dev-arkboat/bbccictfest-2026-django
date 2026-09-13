@@ -1,8 +1,12 @@
 """End-to-end smoke tests for the BBCC ICT Fest 2026 dynamic site.
 
-Covers: home (no Google Forms left), arcade pages, registration +
-mock-bKash payment flow, single editable review, blog comment/like,
-CA application, profiles, sitemap/robots/PWA.
+Registrations are offline-only: no public signup forms, no payment gateway.
+Rows are created from the admin panel with a mandatory integer serial,
+one-or-more segments (events), and an auto-calculated (but editable) amount.
+
+Covers: home (offline messaging, no Google Forms), arcade pages,
+offline registration info page, admin offline model behavior, single editable
+review, blog comment/like, CA dashboards, profiles, sitemap/robots/PWA.
 Run: uv run python manage.py test
 """
 
@@ -10,14 +14,13 @@ from unittest import mock
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.test import Client, SimpleTestCase, TestCase, override_settings
+from django.test import SimpleTestCase, TestCase
 
 from schools.models import School
 
 User = get_user_model()
 
 
-@override_settings(BKASH_MOCK=True)
 class FestFlowTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -36,6 +39,13 @@ class FestFlowTests(TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertNotIn("docs.google.com", r.content.decode())
         self.assertIn("ICT FEST", r.content.decode())
+
+    def test_home_shows_offline_registration(self):
+        r = self.client.get("/")
+        content = r.content.decode()
+        self.assertIn("Registrations Are Offline Only", content)
+        self.assertNotIn("Register Now", content)
+        self.assertNotIn("Register for ", content)
 
     def test_sponsors_track_repeats_for_seamless_loop(self):
         # Each marquee half must repeat the sequence 3x (like the original
@@ -88,73 +98,44 @@ class FestFlowTests(TestCase):
         self.assertIn("/games/snake/", sitemap)
         self.assertIn("/blog/", sitemap)
 
-    # -- registration + mock bKash ------------------------------------
-    def _register(self, slug, data):
-        r = self.client.post(f"/register/{slug}/register/", data)
-        self.assertIn(r.status_code, (302, 200), f"{slug}: {r.status_code}")
-        return r
-
-    def base_data(self, **kw):
-        d = {
-            "full_name": "Test User", "email": "t@example.com",
-            "phone": "01712345678", "school": self.school.pk, "class_name": "10",
-        }
-        d.update(kw)
-        return d
-
-    def test_free_event_confirms_instantly(self):
-        self.client.login(username="tester", password="pass12345")
-        r = self._register("chess", self.base_data())
-        self.assertEqual(r.status_code, 302)
-        from registrations.models import Registration
-
-        reg = Registration.objects.get(user=self.user, event__slug="chess")
-        self.assertEqual(reg.status, Registration.STATUS_CONFIRMED)
-        self.assertEqual(reg.user, self.user)
-
-    def test_paid_event_mock_bkash_end_to_end(self):
-        self.client.login(username="tester", password="pass12345")
-        r = self._register("coding", self.base_data())
-        self.assertEqual(r.status_code, 302)
-        from registrations.models import Registration
-
-        reg = Registration.objects.get(user=self.user, event__slug="coding")
-        self.assertEqual(reg.status, Registration.STATUS_PAYMENT_PENDING)
-
-        pay_url = f"/register/r/{reg.pk}/pay/"
-        r = self.client.get(pay_url)
+    # -- offline registration info page -------------------------------
+    def test_register_page_is_offline_only(self):
+        r = self.client.get("/register/")
         self.assertEqual(r.status_code, 200)
-        reg.refresh_from_db()
-        self.assertTrue(reg.bkash_payment_id.startswith("MOCK-"))
+        content = r.content.decode()
+        self.assertIn("Registrations Are", content)
+        self.assertIn("Offline Only", content)
+        # No public form left: no segment checkboxes, no submit, no total JS.
+        self.assertNotIn('name="events"', content)
+        self.assertNotIn("Register & Continue", content)
+        self.assertNotIn('id="fee-total"', content)
+        # Segments are still listed for reference with fees.
+        self.assertIn("ICT Quiz", content)
 
-        cb = f"/register/pay/callback/?paymentID={reg.bkash_payment_id}&status=success"
-        r = self.client.get(cb)
-        self.assertEqual(r.status_code, 302)
-        reg.refresh_from_db()
-        self.assertTrue(reg.is_paid, reg.status)
-        self.assertTrue(reg.bkash_trx_id)
-        self.assertIn("success", r.url)
+    def test_old_participant_urls_are_gone(self):
+        from registrations.models import Event, Registration
 
-        # idempotent re-hit
-        r = self.client.get(cb)
-        reg.refresh_from_db()
-        self.assertTrue(reg.is_paid)
-
-    def test_cancel_callback_marks_failed(self):
-        self.client.login(username="tester", password="pass12345")
-        self._register("ict-quiz", self.base_data())
-        from registrations.models import Registration
-
-        reg = Registration.objects.get(user=self.user, event__slug="ict-quiz")
-        self.client.get(f"/register/r/{reg.pk}/pay/")
-        reg.refresh_from_db()
-        r = self.client.get(
-            f"/register/pay/callback/?paymentID={reg.bkash_payment_id}&status=cancel"
+        chess = Event.objects.get(slug="chess")
+        reg = Registration.objects.create(
+            serial_number=9001, full_name="Gone User", phone="01712345678",
+            school=self.school, class_name="10",
+            status=Registration.STATUS_CONFIRMED,
         )
-        self.assertEqual(r.status_code, 302)
-        self.assertIn("failed", r.url)
-        reg.refresh_from_db()
-        self.assertFalse(reg.is_paid)
+        reg.events.add(chess)
+        for url in [
+            "/register/chess/register/",
+            f"/register/r/{reg.pk}/",
+            f"/register/r/{reg.pk}/receipt/",
+            f"/register/r/{reg.pk}/pay/",
+            f"/register/r/{reg.pk}/refresh/",
+            f"/register/r/{reg.pk}/success/",
+            f"/register/r/{reg.pk}/failed/",
+            "/register/lookup/",
+            "/register/my/",
+            "/register/pay/callback/",
+        ]:
+            with self.subTest(url=url):
+                self.assertEqual(self.client.get(url).status_code, 404, url)
 
     # -- reviews -------------------------------------------------------
     def test_single_editable_review(self):
@@ -259,6 +240,24 @@ class SchoolVolunteerAmbassadorTests(TestCase):
         profile.school = school
         profile.save()
         return user
+
+    def _make_registration(self, event_slug, serial, name, school, **kw):
+        from registrations.models import Event, Registration
+
+        event = Event.objects.get(slug=event_slug)
+        reg = Registration.objects.create(
+            serial_number=serial, full_name=name,
+            email=kw.get("email", f"{serial}@example.com"),
+            phone=kw.get("phone", "01711111111"),
+            school=school, class_name=kw.get("class_name", "10"),
+            status=kw.get("status", Registration.STATUS_CONFIRMED),
+            amount_bdt=kw.get("amount_bdt", 0),
+        )
+        reg.events.add(event)
+        if not reg.amount_bdt:
+            reg.amount_bdt = reg.calculated_amount
+            reg.save(update_fields=["amount_bdt", "updated_at"])
+        return reg
 
     # -- volunteer detail + QR (public, no login) ------------------------
     def test_volunteer_detail_public(self):
@@ -394,21 +393,9 @@ class SchoolVolunteerAmbassadorTests(TestCase):
         self.assertIn("/register/ca/", sitemap)
 
     def test_ca_dashboard_shows_only_own_school_participants(self):
-        from registrations.models import Event, Registration
-
         self._approve_ca(self.ca_user, self.school)
-        chess = Event.objects.get(slug="chess")
-        Registration.objects.create(
-            event=chess, full_name="Own Pupil", email="own@example.com",
-            phone="01711111111", school=self.school, institution=self.school.name,
-            class_name="10", status=Registration.STATUS_CONFIRMED,
-        )
-        Registration.objects.create(
-            event=chess, full_name="Other Pupil", email="other@example.com",
-            phone="01822222222", school=self.other_school,
-            institution=self.other_school.name,
-            class_name="9", status=Registration.STATUS_CONFIRMED,
-        )
+        self._make_registration("chess", 9101, "Own Pupil", self.school)
+        self._make_registration("chess", 9102, "Other Pupil", self.other_school)
         self.client.login(username="campusca", password="pass12345")
         r = self.client.get("/register/ca/dashboard/")
         self.assertEqual(r.status_code, 200)
@@ -416,358 +403,129 @@ class SchoolVolunteerAmbassadorTests(TestCase):
         self.assertNotContains(r, "Other Pupil")
 
     def test_ca_dashboard_participant_search(self):
-        from registrations.models import Event, Registration
-
         self._approve_ca(self.ca_user, self.school)
-        chess = Event.objects.get(slug="chess")
-        Registration.objects.create(
-            event=chess, full_name="Searchable One", email="one@example.com",
-            phone="01711111111", school=self.school, institution=self.school.name,
-            class_name="10", status=Registration.STATUS_CONFIRMED,
-        )
-        Registration.objects.create(
-            event=chess, full_name="Unrelated Kid", email="two@example.com",
-            phone="01822222222", school=self.school, institution=self.school.name,
-            class_name="9", status=Registration.STATUS_CONFIRMED,
-        )
+        self._make_registration("chess", 9201, "Searchable One", self.school)
+        self._make_registration("chess", 9202, "Unrelated Kid", self.school)
         self.client.login(username="campusca", password="pass12345")
         r = self.client.get("/register/ca/dashboard/", {"q": "Searchable"})
         self.assertContains(r, "Searchable One")
         self.assertNotContains(r, "Unrelated Kid")
 
 
-@override_settings(BKASH_MOCK=True)
-class GuestRegistrationTests(TestCase):
-    """Registration without login: receipt via session, lookup via number+phone."""
+class OfflineRegistrationModelTests(TestCase):
+    """Admin-entered offline rows: serial rules, segments, auto amount."""
 
     @classmethod
     def setUpTestData(cls):
         call_command("seed_site", verbosity=0)
-        cls.school = School.objects.create(name="Guest School")
+        cls.school = School.objects.create(name="Offline School")
 
-    def guest_data(self, **kw):
-        d = {
-            "full_name": "Guest User", "email": "guest@example.com",
-            "phone": "01712345678", "school": self.school.pk, "class_name": "10",
-        }
-        d.update(kw)
-        return d
-
-    def test_guest_free_registration_shows_receipt(self):
-        from registrations.models import Registration
-
-        r = self.client.get("/register/chess/register/")
-        self.assertEqual(r.status_code, 200)
-        r = self.client.post("/register/chess/register/", self.guest_data())
-        self.assertEqual(r.status_code, 302)
-        reg = Registration.objects.get(event__slug="chess")
-        self.assertIsNone(reg.user)
-        self.assertIn(f"/register/r/{reg.pk}/receipt/", r.url)
-        r = self.client.get(f"/register/r/{reg.pk}/receipt/")
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, reg.reference)
-        self.assertContains(r, "Guest User")
-
-    def test_receipt_session_gated(self):
-        from registrations.models import Registration
-
-        self.client.post("/register/chess/register/", self.guest_data())
-        reg = Registration.objects.get(event__slug="chess")
-        stranger = Client()
-        r = stranger.get(f"/register/r/{reg.pk}/receipt/")
-        self.assertEqual(r.status_code, 302)
-        self.assertIn("/register/lookup/", r.url)
-
-    def test_lookup_success_wrong_phone_and_unknown(self):
-        from registrations.models import Registration
-
-        self.client.post("/register/chess/register/", self.guest_data())
-        reg = Registration.objects.get(event__slug="chess")
-        # correct number + phone (formatted differently is fine)
-        r = self.client.post("/register/lookup/", {
-            "reference": reg.reference.lower(), "phone": "01712-345678",
-        })
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "Guest User")
-        self.assertContains(r, reg.reference)
-        # wrong phone
-        r = self.client.post("/register/lookup/", {
-            "reference": reg.reference, "phone": "01999999999",
-        })
-        self.assertEqual(r.status_code, 200)
-        self.assertNotContains(r, "Guest User")
-        self.assertContains(r, "No registration found")
-        # unknown number
-        r = self.client.post("/register/lookup/", {
-            "reference": "BBCC26-99999", "phone": "01712345678",
-        })
-        self.assertContains(r, "No registration found")
-
-    def test_duplicate_phone_email_registrations_allowed(self):
-        from registrations.models import Registration
-
-        self.client.post("/register/chess/register/", self.guest_data())
-        self.client.post("/register/chess/register/", self.guest_data())
-        self.assertEqual(
-            Registration.objects.filter(
-                event__slug="chess", phone="01712345678", email="guest@example.com"
-            ).count(), 2,
-        )
-
-    def test_guest_paid_flow_mock_bkash_end_to_end(self):
-        from registrations.models import Registration
-
-        r = self.client.post("/register/coding/register/", self.guest_data())
-        self.assertEqual(r.status_code, 302)
-        reg = Registration.objects.get(event__slug="coding")
-        self.assertIsNone(reg.user)
-        r = self.client.get(f"/register/r/{reg.pk}/pay/")
-        self.assertEqual(r.status_code, 200)
-        reg.refresh_from_db()
-        cb = f"/register/pay/callback/?paymentID={reg.bkash_payment_id}&status=success"
-        r = self.client.get(cb)
-        self.assertEqual(r.status_code, 302)
-        reg.refresh_from_db()
-        self.assertTrue(reg.is_paid, reg.status)
-        r = self.client.get(f"/register/r/{reg.pk}/success/")
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, reg.reference)
-
-
-class RegisterStatusTests(TestCase):
-    """SiteSetting.register_status on/off switch for registration pages."""
-
-    @classmethod
-    def setUpTestData(cls):
-        call_command("seed_site", verbosity=0)
-        cls.school = School.objects.create(name="Status School")
-
-    def set_status(self, on):
-        from core.models import SiteSetting
-
-        site = SiteSetting.get_solo()
-        site.register_status = on
-        site.save(update_fields=["register_status"])
-
-    def guest_data(self, **kw):
-        d = {
-            "full_name": "Status User", "email": "status@example.com",
-            "phone": "01712345678", "school": self.school.pk, "class_name": "10",
-        }
-        d.update(kw)
-        return d
-
-    def test_notice_shown_and_forms_hidden_when_off(self):
-        self.set_status(False)
-        r = self.client.get("/register/")
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "Registrations closed")
-        self.assertContains(r, "find your registration")
-        self.assertNotContains(r, "Register & Continue")
-        r = self.client.get("/register/chess/register/")
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, "Registrations closed")
-        self.assertNotContains(r, "Confirm Registration")
-
-    def test_posts_blocked_when_off(self):
-        from registrations.models import Registration
-
-        self.set_status(False)
-        r = self.client.post("/register/", {
-            **self.guest_data(), "events": ["1"],
-        })
-        self.assertEqual(r.status_code, 302)
-        self.assertIn("/register/", r.url)
-        self.assertEqual(Registration.objects.count(), 0)
-        chess = self._event_pk("chess")
-        r = self.client.post(f"/register/chess/register/", self.guest_data())
-        self.assertEqual(r.status_code, 302)
-        self.assertEqual(Registration.objects.count(), 0)
-
-    def test_everything_back_when_on(self):
-        from registrations.models import Registration
-
-        self.set_status(False)
-        self.set_status(True)
-        r = self.client.get("/register/")
-        self.assertNotContains(r, "Registrations closed")
-        self.assertContains(r, "Register & Continue")
-        r = self.client.post("/register/chess/register/", self.guest_data())
-        self.assertEqual(r.status_code, 302)
-        self.assertEqual(Registration.objects.count(), 1)
-
-    def _event_pk(self, slug):
+    def _events(self, *slugs):
         from registrations.models import Event
 
-        return Event.objects.get(slug=slug).pk
+        return [Event.objects.get(slug=s) for s in slugs]
 
+    def test_serial_required_unique_integer(self):
+        from django.db import IntegrityError
 
-@override_settings(BKASH_MOCK=True)
-class MultiSegmentRegistrationTests(TestCase):
-    """One form, many segments, one combined bKash payment."""
-
-    @classmethod
-    def setUpTestData(cls):
-        call_command("seed_site", verbosity=0)
-        cls.school = School.objects.create(name="Multi School")
-        cls.user = User.objects.create_user(
-            username="tester", email="t@example.com", password="pass12345"
-        )
-
-    def _pks(self, *slugs):
-        from registrations.models import Event
-
-        return [str(Event.objects.get(slug=s).pk) for s in slugs]
-
-    def _personal(self, **kw):
-        d = {
-            "full_name": "Multi User", "email": "multi@example.com",
-            "phone": "01712345678", "school": self.school.pk, "class_name": "10",
-        }
-        d.update(kw)
-        return d
-
-    def test_multi_page_has_checkboxes_total_and_dropdowns(self):
-        r = self.client.get("/register/")
-        self.assertEqual(r.status_code, 200)
-        content = r.content.decode()
-        self.assertIn('name="events"', content)
-        self.assertIn("data-fee", content)
-        self.assertIn('id="fee-total"', content)
-        self.assertIn('name="school"', content)
-        self.assertIn("Class 6", content)
-        self.assertIn("Other", content)
-
-    def test_multi_guest_mixed_free_paid_single_payment(self):
-        from registrations.models import PaymentTransaction, Registration
-
-        r = self.client.post("/register/", {
-            **self._personal(), "events": self._pks("chess", "coding"),
-        })
-        self.assertEqual(r.status_code, 302)
-        rows = list(Registration.objects.order_by("pk"))
-        self.assertEqual(len(rows), 2)
-        self.assertTrue(rows[0].group_id)
-        self.assertEqual(rows[0].group_id, rows[1].group_id)
-        self.assertIsNone(rows[0].user)
-        self.assertEqual(rows[0].institution, "Multi School")
-        chess = Registration.objects.get(event__slug="chess")
-        coding = Registration.objects.get(event__slug="coding")
-        self.assertEqual(chess.status, Registration.STATUS_CONFIRMED)
-        self.assertEqual(coding.status, Registration.STATUS_PAYMENT_PENDING)
-        self.assertIn(f"/register/r/{rows[0].pk}/pay/", r.url)
-        r = self.client.get(f"/register/r/{rows[0].pk}/pay/")
-        self.assertEqual(r.status_code, 200)
-        txn = PaymentTransaction.objects.get()
-        self.assertEqual(txn.amount_bdt, 49)
-        self.assertEqual(txn.group_id, rows[0].group_id)
-        cb = f"/register/pay/callback/?paymentID={txn.payment_id}&status=success"
-        r = self.client.get(cb)
-        self.assertEqual(r.status_code, 302)
-        chess.refresh_from_db()
-        coding.refresh_from_db()
-        self.assertEqual(chess.status, Registration.STATUS_CONFIRMED)
-        self.assertTrue(coding.is_paid)
-        self.assertTrue(coding.bkash_trx_id)
-        r = self.client.get(f"/register/r/{rows[0].pk}/success/")
-        self.assertEqual(r.status_code, 200)
-        self.assertContains(r, chess.reference)
-        self.assertContains(r, coding.reference)
-
-    def test_multi_all_free_confirms_and_lists_numbers(self):
         from registrations.models import Registration
 
-        r = self.client.post("/register/", {
-            **self._personal(), "events": self._pks("chess", "rubiks-cube"),
+        field = Registration._meta.get_field("serial_number")
+        self.assertIsInstance(field, __import__("django.db.models", fromlist=["PositiveIntegerField"]).PositiveIntegerField)
+        self.assertTrue(field.unique)
+        self.assertFalse(field.null)
+        self.assertFalse(field.blank)
+        # missing serial -> validation error via form
+        from registrations.forms import RegistrationAdminForm
+
+        chess = self._events("chess")[0]
+        form = RegistrationAdminForm(data={
+            "full_name": "No Serial", "phone": "01712345678",
+            "school": self.school.pk, "class_name": "10",
+            "events": [chess.pk], "amount_bdt": 0,
+            "status": Registration.STATUS_PENDING,
         })
-        self.assertEqual(r.status_code, 302)
-        rows = list(Registration.objects.order_by("pk"))
-        self.assertEqual(len(rows), 2)
-        self.assertTrue(all(x.status == Registration.STATUS_CONFIRMED for x in rows))
-        r = self.client.get(r.url)
-        for row in rows:
-            self.assertContains(r, row.reference)
-
-    def test_multi_skips_paid_event_for_logged_in_user(self):
-        from registrations.models import PaymentTransaction, Registration
-
-        self.client.login(username="tester", password="pass12345")
-        self.client.post("/register/coding/register/", self._personal())
-        reg = Registration.objects.get(event__slug="coding", user=self.user)
-        self.client.get(f"/register/r/{reg.pk}/pay/")
-        reg.refresh_from_db()
-        self.client.get(
-            f"/register/pay/callback/?paymentID={reg.bkash_payment_id}&status=success"
+        self.assertFalse(form.is_valid())
+        self.assertIn("serial_number", form.errors)
+        # duplicate serial rejected
+        reg = Registration.objects.create(
+            serial_number=5001, full_name="First", phone="01712345678",
+            school=self.school, class_name="10",
         )
-        r = self.client.post("/register/", {
-            **self._personal(), "events": self._pks("coding", "chess"),
-        })
-        self.assertEqual(r.status_code, 302)
-        self.assertEqual(Registration.objects.filter(user=self.user).count(), 2)
-        chess = Registration.objects.get(user=self.user, event__slug="chess")
-        self.assertEqual(chess.status, Registration.STATUS_CONFIRMED)
-        self.assertEqual(PaymentTransaction.objects.count(), 1)
+        reg.events.add(chess)
+        with self.assertRaises(IntegrityError):
+            dup = Registration.objects.create(
+                serial_number=5001, full_name="Dupe", phone="01812345678",
+                school=self.school, class_name="10",
+            )
+            dup.events.add(chess)
 
-    def test_school_required_and_class_validated(self):
+    def test_no_institution_field(self):
         from registrations.models import Registration
 
-        data = self._personal()
-        del data["school"]
-        r = self.client.post("/register/", {**data, "events": self._pks("chess")})
-        self.assertEqual(r.status_code, 200)
-        self.assertEqual(Registration.objects.count(), 0)
-        r = self.client.post("/register/", {
-            **self._personal(class_name="11"), "events": self._pks("chess"),
-        })
-        self.assertEqual(r.status_code, 200)
-        self.assertEqual(Registration.objects.count(), 0)
-        r = self.client.post("/register/", {
-            **self._personal(), "events": [],
-        })
-        self.assertEqual(r.status_code, 200)
-        self.assertEqual(Registration.objects.count(), 0)
+        names = {f.name for f in Registration._meta.get_fields()}
+        self.assertNotIn("institution", names)
+        self.assertNotIn("group_id", names)
+        self.assertNotIn("bkash_payment_id", names)
+        self.assertNotIn("bkash_trx_id", names)
 
-    def test_team_event_registers_without_team_fields(self):
-        # Team details are no longer collected on public forms (kept on the
-        # model + admin only) — science showdown registers like any segment.
+    def test_school_always_required(self):
+        from django.db.models import PROTECT
+
+        from registrations.forms import RegistrationAdminForm
         from registrations.models import Registration
 
-        r = self.client.post("/register/", {
-            **self._personal(), "events": self._pks("science-showdown"),
+        field = Registration._meta.get_field("school")
+        self.assertFalse(field.null)
+        self.assertFalse(field.blank)
+        self.assertEqual(field.remote_field.on_delete, PROTECT)
+        # missing school -> validation error via form
+        chess = self._events("chess")[0]
+        form = RegistrationAdminForm(data={
+            "serial_number": 5201, "full_name": "No School",
+            "phone": "01712345678",
+            "class_name": "10", "events": [chess.pk],
+            "amount_bdt": 0, "status": Registration.STATUS_PENDING,
         })
-        self.assertEqual(r.status_code, 302)
-        self.assertEqual(Registration.objects.count(), 1)
-        reg = Registration.objects.get(event__slug="science-showdown")
-        self.assertEqual(reg.status, Registration.STATUS_CONFIRMED)
+        self.assertFalse(form.is_valid())
+        self.assertIn("school", form.errors)
 
-    def test_serial_unique_on_single_form(self):
+    def test_segments_addable_and_amount_auto_calculates(self):
+        from registrations.forms import RegistrationAdminForm
         from registrations.models import Registration
 
-        Registration.objects.create(
-            event_id=self._event_pk("chess"), full_name="Old", email="o@x.com",
-            phone="01800000000", school=self.school, institution="Multi School",
-            class_name="10", serial_number="OFF-1",
-            status=Registration.STATUS_CONFIRMED,
-        )
-        data = self._personal(phone="01800000001", email="n@x.com")
-        data["serial_number"] = "OFF-1"
-        r = self.client.post("/register/chess/register/", data)
-        self.assertEqual(r.status_code, 200)
-        self.assertEqual(Registration.objects.count(), 1)
-        data["serial_number"] = "OFF-2"
-        r = self.client.post("/register/chess/register/", data)
-        self.assertEqual(r.status_code, 302)
-        self.assertTrue(
-            Registration.objects.filter(serial_number="OFF-2").exists()
-        )
+        chess, coding = self._events("chess", "coding")
+        # amount 0 -> auto-fills with summed fees
+        form = RegistrationAdminForm(data={
+            "serial_number": 5101, "full_name": "Multi Seg",
+            "phone": "01712345678", "school": self.school.pk,
+            "class_name": "10", "events": [chess.pk, coding.pk],
+            "amount_bdt": 0, "status": Registration.STATUS_PENDING,
+        })
+        self.assertTrue(form.is_valid(), form.errors)
+        reg = form.save()
+        self.assertEqual(reg.amount_bdt, chess.fee_bdt + coding.fee_bdt)
+        self.assertEqual(set(reg.events.all()), {chess, coding})
+        # manual override preserved
+        form2 = RegistrationAdminForm(data={
+            "serial_number": 5102, "full_name": "Manual Amt",
+            "phone": "01712345678", "school": self.school.pk,
+            "class_name": "10", "events": [coding.pk],
+            "amount_bdt": 100, "status": Registration.STATUS_PAID,
+        })
+        self.assertTrue(form2.is_valid(), form2.errors)
+        reg2 = form2.save()
+        self.assertEqual(reg2.amount_bdt, 100)
 
-    def _event_pk(self, slug):
-        from registrations.models import Event
+    def test_payment_status_choices_have_no_gateway_state(self):
+        from registrations.models import Registration
 
-        return Event.objects.get(slug=slug).pk
+        values = {v for v, _ in Registration.STATUS_CHOICES}
+        self.assertNotIn("payment_pending", values)
+        self.assertIn("paid", values)
+        self.assertIn("pending", values)
 
 
-@override_settings(BKASH_MOCK=True)
 class VerifyPageTests(TestCase):
     """Fest-day gate tool: search everything, filter, check in."""
 
@@ -785,16 +543,20 @@ class VerifyPageTests(TestCase):
         chess = Event.objects.get(slug="chess")
         coding = Event.objects.get(slug="coding")
         cls.r1 = Registration.objects.create(
-            event=chess, full_name="Gate Test", email="gate@example.com",
-            phone="01712345678", school=cls.school, institution="Gate School",
-            class_name="10", serial_number="GATE-1",
+            serial_number=7001,
+            full_name="Gate Test", email="gate@example.com",
+            phone="01712345678", school=cls.school,
+            class_name="10",
             status=Registration.STATUS_CONFIRMED,
         )
+        cls.r1.events.add(chess)
         cls.r2 = Registration.objects.create(
-            event=coding, full_name="Second Person", email="second@example.com",
-            phone="01899999999", school=cls.other_school, institution="Far School",
+            serial_number=7002,
+            full_name="Second Person", email="second@example.com",
+            phone="01899999999", school=cls.other_school,
             class_name="9", status=Registration.STATUS_PAID,
         )
+        cls.r2.events.add(coding)
 
     def test_access_control(self):
         r = self.client.get("/register/verify/")
@@ -808,15 +570,13 @@ class VerifyPageTests(TestCase):
         self.assertEqual(r.status_code, 200)
 
     def test_search_every_field(self):
-        from registrations.models import Registration
-
         self.client.login(username="gate", password="pass12345")
         cases = [
             "01712345678",      # phone
             "01712-345678",     # phone, formatted
             self.r1.reference,  # reference number
             self.r1.reference.lower().replace("bbcc26-", ""),  # bare digits
-            "GATE-1",           # serial number
+            "7001",             # serial number
             "Gate Test",        # name
             "Gate School",      # school
             "gate@example.com", # email
@@ -834,7 +594,7 @@ class VerifyPageTests(TestCase):
         from registrations.models import Registration
 
         self.client.login(username="gate", password="pass12345")
-        chess_id = str(Registration.objects.get(pk=self.r1.pk).event_id)
+        chess_id = str(self.r1.events.first().pk)
         r = self.client.get("/register/verify/", {"event": chess_id})
         self.assertContains(r, "Gate Test")
         self.assertNotContains(r, "Second Person")
@@ -844,6 +604,20 @@ class VerifyPageTests(TestCase):
         r = self.client.get("/register/verify/", {"school": str(self.school.pk)})
         self.assertContains(r, "Gate Test")
         self.assertNotContains(r, "Second Person")
+
+    def test_row_shows_school_segments_and_amount(self):
+        self.r2.amount_bdt = self.r2.calculated_amount
+        self.r2.save(update_fields=["amount_bdt", "updated_at"])
+        self.client.login(username="gate", password="pass12345")
+        r = self.client.get("/register/verify/")
+        self.assertEqual(r.status_code, 200)
+        content = r.content.decode()
+        # mandatory school, multi-segment names, and fee cross-check column
+        self.assertContains(r, "Gate School")
+        self.assertContains(r, "Chess")
+        self.assertContains(r, "Coding Competition")
+        self.assertContains(r, f"{self.r2.amount_bdt} BDT")
+        self.assertContains(r, "Free")  # chess row has amount 0
 
     def test_check_in_toggle(self):
         from registrations.models import Registration
