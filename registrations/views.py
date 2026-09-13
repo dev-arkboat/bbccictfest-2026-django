@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from accounts.decorators import organizer_required, volunteer_required
+from accounts.decorators import organizer_required
 from accounts.forms import CampusAmbassadorCreateForm
 from accounts.models import Profile, Role
 from core.forms import PersonReviewForm
@@ -48,7 +48,7 @@ def organizer_board(request):
     return render(request, "registrations/board.html", {"registrations": regs})
 
 
-@volunteer_required
+@organizer_required
 def verify_registrations(request):
     """Fest-day gate tool: find any registration by phone, reference number,
     serial number, name, school, email or class — then filter and check in."""
@@ -114,7 +114,7 @@ def verify_registrations(request):
     )
 
 
-@volunteer_required
+@organizer_required
 @require_POST
 def check_in_toggle(request, pk):
     """Tick/untick fest-day entry for one registration."""
